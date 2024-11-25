@@ -1,14 +1,6 @@
-from database.session import Loja_database
-
-from model.Cliente.clientes_model import Cliente
-from model.Produto.produtos_model import Produto
-from model.Venda.vendas_model import Venda
-
-Loja_database()._database()
-print(Loja_database().exist_db())
-print(Loja_database().database_loja)
+from settings.flask_app import create_app
 
 
-print(Cliente.table_clientes())
-print(Produto.table_produto())
-print(Venda.table_venda())
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=True)
