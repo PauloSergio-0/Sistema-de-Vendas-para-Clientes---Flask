@@ -7,10 +7,7 @@ class Produto:
         with open('app/model/Produto/produto.sql', 'r') as file:
             sql_produto = file.read()
         
-       
         connection = con.connect(Loja_database().database_loja)
         curso = connection.cursor()
         curso.execute(sql_produto)
         curso.close()
-        
-        return sql_produto

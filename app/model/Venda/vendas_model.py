@@ -12,6 +12,3 @@ class Venda:
         cursor = connection.cursor()
         cursor.execute(sql_venda)
         cursor.close()
-        
-        
-        return sql_venda

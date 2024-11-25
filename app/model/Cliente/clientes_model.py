@@ -13,4 +13,3 @@ class Cliente:
         cursor.execute(sql_cliente)
         cursor.close()
         
-        return sql_cliente
