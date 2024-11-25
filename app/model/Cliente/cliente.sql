@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS cliente (
+    id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome VARCHAR NOT NULL,
+    endereco VARCHAR NOT NULL,
+    contato VARCHAR NOT NULL,
+    status_cliente INTEGER NOT NULL
+);
