@@ -5,7 +5,7 @@ from routes.test_routes import register_routes
 from model.Cliente.clientes_model import Cliente
 from model.Produto.produtos_model import Produto
 from model.Venda.vendas_model import Venda
-
+from routes.cliente_routes import register_clientes_routes
 
 
 def create_app():
@@ -21,5 +21,5 @@ def create_app():
         Venda.table_venda()
         
     register_routes(app)
-    
+    register_clientes_routes(app)
     return app
