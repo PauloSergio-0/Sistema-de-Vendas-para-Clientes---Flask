@@ -3,6 +3,7 @@ from database.session import Loja_database
 from flask import jsonify
 
 class Service_cliente:
+    
     def insert_cliente(data: dict):
         data['status_cliente'] = 1
         values_cliente = tuple(data.values())
