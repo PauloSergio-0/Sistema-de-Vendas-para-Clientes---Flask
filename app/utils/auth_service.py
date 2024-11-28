@@ -8,10 +8,8 @@ class Jwt_service:
         try:
             
             payload = jwt.decode(token, Config_Jwt.SECRET_KEY, algorithms = [Config_Jwt.ALGORITHM])
-            
-            print('payload')
-            print(payload)
             return payload
+        
         except PyJWKError:
             return None
         
