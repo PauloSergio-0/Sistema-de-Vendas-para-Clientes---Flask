@@ -1,6 +1,6 @@
 import sqlite3 as con
 from database.session import Loja_database
-from flask import jsonify
+
 
 class Service_produto:
     
