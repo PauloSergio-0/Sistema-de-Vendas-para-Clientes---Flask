@@ -15,3 +15,7 @@ def register_venda_routes(app):
             Service_venda.insert_venda(json_venda)
             
         return jsonify({'message': "venda cadastrado"}), 201
+    
+    @app.route("/listar/venda", methods=['GET'])
+    def listar_venda():
+        return Service_venda.list_venda()

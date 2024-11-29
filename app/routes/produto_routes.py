@@ -15,3 +15,8 @@ def register_produto_routes(app):
             Service_produto.insert_produto(json_produto)
             
         return jsonify({'message': "produto cadastrado"}), 201
+    
+    @app.route("/listar/produto", methods = ['GET'])
+    def listar_produto():
+        
+        return jsonify({"message": Service_produto.list_produto()})

@@ -3,11 +3,6 @@ sistema_vendas/
 │   ├── database/
 │   │   ├── __init__.py          # Inicialização do banco de dados
 │   │   ├── session.py          # Sessão do banco de dados (SQLite)
-│   ├── domain/                 # Lógica de negócio
-│   │   ├── __init__.py
-│   │   ├── cliente_domain.py
-│   │   ├── produto_domain.py
-│   │   ├── venda_domain.py
 │   ├── model/                  # Definições de modelos
 │   │   ├── __init__.py
 │   │   ├── Cliente/
@@ -46,7 +41,6 @@ sistema_vendas/
 │   │   ├── fastapi_app.py      # Configuração específica do FastAPI
 │   ├── utils/                  # Utilitários gerais
 │   │   ├── __init__.py
-│   │   ├── csv_handler.py      # Manipulação de arquivos CSV
 │   │   ├── json_validator.py   # Validação de JSONs recebidos pelo Flask
 │   ├── __init__.py
 │   ├── run.py                  # Arquivo principal para iniciar as aplicações

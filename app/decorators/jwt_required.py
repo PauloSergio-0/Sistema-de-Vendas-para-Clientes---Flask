@@ -9,7 +9,7 @@ def jwt_required(f):
         auth_header = request.headers.get("Authorization")
         
         if not auth_header or not auth_header.startswith("Bearer "):
-            return jsonify({"error": "Token não fornecido"})
+            return jsonify({"error": "Token não fornecido"}), 401
             
         token = auth_header.split(" ")[1]
     
