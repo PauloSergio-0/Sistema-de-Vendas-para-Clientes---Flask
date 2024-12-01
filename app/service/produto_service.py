@@ -35,7 +35,8 @@ class Service_produto:
                     "nome_produto": row[1],
                     "codigo_produto": row[2],
                     "categoria_produto": row[3],
-                    "status_produtos": row[4]
+                    "preco_produto": row[4],
+                    "status_produto": row[5]
                 }
                 lista_produto.append(json_produto)
             

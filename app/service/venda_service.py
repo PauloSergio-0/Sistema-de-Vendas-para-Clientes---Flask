@@ -32,9 +32,15 @@ class Service_venda:
                 "id_venda": row[0],
                 "id_cliente": row[1],
                 "id_produto": row[2],
-                "quantidade_venda": row[3],
-                "data_venda": row[4],
-                "status_venda": row[5]
+                "nome_cliente": row[3],
+                "contato_cliente": row[4],
+                "nome_produto": row[5],
+                "categoria_produto": row[6],
+                "quantidade_venda": row[7],
+                "preco_produto": row[8],
+                "valor_venda": row[9],
+                "data_venda": row[10],
+                "status_venda": row[11]
             }
             lista_venda.append(json_venda)
         cursor.close()  
