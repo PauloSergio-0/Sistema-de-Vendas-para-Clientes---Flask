@@ -1,13 +1,13 @@
 SELECT 
 	v.id_venda,
 	v.id_cliente,
-	v.id_produto,
 	c.nome AS nome_cliente,
 	c.contato AS contato_cliente,
-	p.nome  AS nome_produto,
-	p.categoria  AS categoria_produto,
-	v.qtd_venda,
+	v.id_produto,
+	p.nome AS nome_produto,
+	p.categoria AS categoria_produto,
 	p.preco AS preco_produto,
+	v.qtd_venda,
 	ROUND(p.preco * v.qtd_venda, 2) AS valor_venda,
 	v.data_venda,
 	CASE
@@ -18,10 +18,8 @@ SELECT
 		WHEN v.status_vendas = 4 THEN 'cancelado pelo intermediador'
 		WHEN v.status_vendas = 9 THEN 'excluida'
 		ELSE 'status_desconhecido'
-	END AS status_venda
+	END AS status_venda	
 FROM  venda v
-INNER JOIN produto p
-ON v.id_produto = p.id_produto
-INNER  JOIN  cliente c 
-ON v.id_cliente  = c.id_cliente
-ORDER BY v.data_venda ASC , valor_venda DESC;
+INNER JOIN produto p ON p.id_produto = v.id_produto 
+INNER JOIN cliente c ON c.id_cliente = v.id_cliente
+WHERE v.id_venda = ?; 

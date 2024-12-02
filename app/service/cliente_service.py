@@ -40,3 +40,25 @@ class Service_cliente:
         cursor.close()
         
         return lista_clientes
+
+    def filter_cliente(id_cliente: int):
+        value = (id_cliente,)
+        
+        with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
+            sql_filter_cliente = file.read()
+
+        connection = con.Connection(Loja_database().database_loja)
+        cursor = connection.cursor()
+        cursor.execute(sql_filter_cliente, value)
+        cliente = cursor.fetchall()
+        cursor.close()
+        
+        for item in cliente:
+            json_lista_cliente = {
+                "id_cliente": item[0],
+                "nome_cliente": item[1],
+                "endereco_cliente": item[2],
+                "contato_cliente": item[3],
+                "status_cliente": item[4]
+            }
+        return json_lista_cliente

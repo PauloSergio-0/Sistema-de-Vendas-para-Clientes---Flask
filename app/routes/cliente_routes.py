@@ -21,7 +21,7 @@ def register_clientes_routes(app: Flask):
     def listar_cliente():
         return {"message": Service_cliente.list_cliente()}
     
-    @app.route("/filter/cliente")
+    @app.route("/filtro/cliente", methods = ['GET'])
     def filtro_cliente():
-        paramentros = request.args.get('param')
-        return jsonify({"message": paramentros})
+        is_cliente = request.args.get('id_cliente')
+        return jsonify({"message": Service_cliente.filter_cliente(is_cliente)})
