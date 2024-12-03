@@ -1,6 +1,7 @@
 import sqlite3 as con
 from database.session import Loja_database
 from flask import jsonify
+from datetime import date
 import json
 class Service_venda:
     
@@ -46,3 +47,65 @@ class Service_venda:
         cursor.close()  
 
         return lista_venda
+    
+    
+    def filter_vendas(id_venda: int):
+        venda = (id_venda, )
+        
+        with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
+            sql_filter_venda = file.read()
+            
+        connection = con.Connection(Loja_database().database_loja)
+        cursor = connection.cursor()
+        cursor.execute(sql_filter_venda, venda)
+        venda_filted =cursor.fetchall()
+        cursor.close()
+        
+        for item in venda_filted:
+            json_venda = {
+                "id_venda": item[0],
+                "id_cliente": item[1],
+                "id_produto": item[2],
+                "nome_cliente": item[3],
+                "contato_cliente": item[4],
+                "nome_produto": item[5],
+                "categoria_produto": item[6],
+                "quantidade_venda": item[7],
+                "preco_produto": item[8],
+                "valor_venda": item[9],
+                "data_venda": item[10],
+                "status_venda": item[11]
+            }
+            
+        return json_venda
+    
+    def filter_date_vendas(date_venda: str):
+        venda = (date_venda, )
+        
+        with open('app/sql/venda_sql/filter_date_venda.sql', 'r') as file:
+            sql_filter_venda = file.read()
+            
+        connection = con.Connection(Loja_database().database_loja)
+        cursor = connection.cursor()
+        cursor.execute(sql_filter_venda, venda)
+        venda_filted =cursor.fetchall()
+        cursor.close()
+        venda_date_filted = []
+        for item in venda_filted:
+            json_venda_date = {
+                "id_venda": item[0],
+                "id_cliente": item[1],
+                "id_produto": item[2],
+                "nome_cliente": item[3],
+                "contato_cliente": item[4],
+                "nome_produto": item[5],
+                "categoria_produto": item[6],
+                "quantidade_venda": item[7],
+                "preco_produto": item[8],
+                "valor_venda": item[9],
+                "data_venda": item[10],
+                "status_venda": item[11]
+            }
+            venda_date_filted.append(json_venda_date)
+            
+        return venda_date_filted

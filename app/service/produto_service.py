@@ -42,3 +42,26 @@ class Service_produto:
             
             cursor.close()
         return lista_produto
+
+
+    def filter_produto(id_produto: int):
+        produto = (id_produto, )
+        
+        with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
+            sql_filter_produto = file.read()
+        
+        connection = con.Connection(Loja_database().database_loja)
+        cursor = connection.cursor()
+        cursor.execute(sql_filter_produto, produto)
+        produto_filted = cursor.fetchall()
+        cursor.close()
+        for item in produto_filted:
+            json_produto = {
+                    "id_produto": item[0],
+                    "nome_produto": item[1],
+                    "codigo_produto": item[2],
+                    "categoria_produto": item[3],
+                    "preco_produto": item[4],
+                    "status_produto": item[5]
+                }
+        return json_produto

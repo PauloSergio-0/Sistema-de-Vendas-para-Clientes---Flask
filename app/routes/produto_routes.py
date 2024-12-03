@@ -3,7 +3,7 @@ from service.produto_service import Service_produto
 from decorators.jwt_required import jwt_required
 from utils.json_validator import Validator
 
-def register_produto_routes(app):
+def register_produto_routes(app:Flask):
     
     @app.route("/cadastro/produto", methods=["POST"])
     @jwt_required
@@ -20,3 +20,10 @@ def register_produto_routes(app):
     def listar_produto():
         
         return jsonify({"message": Service_produto.list_produto()})
+    
+    
+    @app.route('/filtro/produto', methods = ['GET'])
+    def filtro_produto():
+        
+        id_produto = request.args.get('id_produto')
+        return jsonify({'message': Service_produto.filter_produto(id_produto)})
