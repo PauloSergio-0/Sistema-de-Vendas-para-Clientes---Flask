@@ -83,6 +83,7 @@ class Service_cliente:
             return json_lista_cliente
         
     
+    
     def delete_cliente( id_cliente: str):
         
         if Service_cliente.exists_cliente(id_cliente):
