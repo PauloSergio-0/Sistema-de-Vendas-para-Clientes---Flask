@@ -9,7 +9,6 @@ def register_venda_routes(app: Flask):
     @jwt_required
     def insert_venda():
         json_venda = request.get_json()
-        print(json_venda)
         
         if Validator.venda_json(json_venda):
             Service_venda.insert_venda(json_venda)
@@ -30,3 +29,10 @@ def register_venda_routes(app: Flask):
         data_venda: str = request.args.get("data_venda")
         return jsonify({"mensage": Service_venda.filter_date_vendas(data_venda)})
     
+    @app.route('/delete/venda')
+    def exluir_venda():
+        id_venda = request.args.get("id_venda")
+        
+        return jsonify({"message": Service_venda.delete_venda(id_venda)})
+        
+        

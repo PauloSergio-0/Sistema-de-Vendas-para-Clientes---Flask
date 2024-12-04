@@ -10,8 +10,7 @@ def register_clientes_routes(app: Flask):
     @jwt_required
     def cadastrar_clientes():
         json_cliente = request.get_json()
-        print('json_cliente')
-        print(json_cliente)
+        
         if Validator.cliente_json(json_cliente):
             Service_cliente.insert_cliente(json_cliente)
         return jsonify({"mensage": "cliente cadastrado"}), 201

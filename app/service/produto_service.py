@@ -20,8 +20,6 @@ class Service_produto:
                 return True
             else:
                 return False
-            
-            
         except con.Error as e:
             return False
             
@@ -86,3 +84,23 @@ class Service_produto:
                     "status_produto": item[5]
                 }
         return json_produto
+    
+    def delete_produto(id_produto):
+        
+        produto = (id_produto, )
+        
+        with open('app/sql/produto_sql/delete_produto.sql', 'r') as file:
+            sql_delete_produto = file.read()
+        try:    
+            if Service_produto._exists_produto(id_produto):
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_delete_produto, produto)
+                connection.commit()
+                cursor.close()
+                return f"produto com id {id_produto} excluído"
+            else:
+                return f"produto com id {id_produto} não existe"
+        except con.Error as e:
+            print(e)
+            return 'erro in database'

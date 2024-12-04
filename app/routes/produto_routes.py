@@ -27,3 +27,9 @@ def register_produto_routes(app:Flask):
         
         id_produto = request.args.get('id_produto')
         return jsonify({'message': Service_produto.filter_produto(id_produto)})
+    
+    @app.route('/delete/produto')
+    def exlcluir_produto():
+        id_produto = request.args.get("id_produto")
+        
+        return jsonify({"message": Service_produto.delete_produto(id_produto)})

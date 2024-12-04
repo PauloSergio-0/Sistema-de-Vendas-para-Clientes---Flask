@@ -81,9 +81,7 @@ class Service_cliente:
                     "status_cliente": item[4]
                 }
             return json_lista_cliente
-        
-    
-    
+
     def delete_cliente( id_cliente: str):
         
         if Service_cliente._exists_cliente(id_cliente):

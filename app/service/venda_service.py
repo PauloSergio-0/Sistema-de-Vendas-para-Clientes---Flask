@@ -127,3 +127,24 @@ class Service_venda:
             venda_date_filted.append(json_venda_date)
             
         return venda_date_filted
+    
+    def delete_venda(id_venda: int):
+        
+        venda = (id_venda, )
+        
+        with open('app/sql/venda_sql/delete_venda.sql', 'r') as file:
+            sql_delete_venda = file.read()
+        
+        try:
+            if Service_venda._exists_vendas(id_venda):
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_delete_venda, venda)
+                connection.commit()
+                cursor.close()
+                return f'Venda com id {id_venda} excluída'
+            else:
+                return f'Venda com id {id_venda} não existe'
+            
+        except con.Error:
+            return 'error in query'        

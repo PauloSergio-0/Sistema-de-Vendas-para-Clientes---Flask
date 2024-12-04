@@ -5,7 +5,7 @@ from settings.config import Config
 class Loja_database:
     def __init__(self):
         self.url_db = Config.URL_DB
-        self.database_loja = str(self.url_db + '/' + Config.DATABASE)
+        self.database_loja = str(self.url_db + Config.DATABASE)
 
     def _database(self):
         
