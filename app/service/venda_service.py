@@ -5,6 +5,24 @@ from datetime import date
 import json
 class Service_venda:
     
+    def _exists_vendas(id_venda: int):
+        venda = (id_venda, )
+        
+        with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
+            sql_filter_venda = file.read()
+        try:    
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_venda, venda)
+            venda_filted =cursor.fetchall()
+            cursor.close()
+            if venda_filted:
+                return True
+            else: 
+                return False
+        except con.Error as e:
+            return False
+    
     def insert_venda(data: dict):
         data['status_venda'] = 1
         values_Venda = tuple(data.values())
@@ -58,7 +76,7 @@ class Service_venda:
         connection = con.Connection(Loja_database().database_loja)
         cursor = connection.cursor()
         cursor.execute(sql_filter_venda, venda)
-        venda_filted =cursor.fetchall()
+        venda_filted = cursor.fetchall()
         cursor.close()
         
         for item in venda_filted:

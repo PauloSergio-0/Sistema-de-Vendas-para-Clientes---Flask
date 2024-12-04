@@ -4,6 +4,27 @@ from database.session import Loja_database
 
 class Service_produto:
     
+    
+    def _exists_produto(id_produto: int):
+        produto = (id_produto, )
+        
+        with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
+            sql_filter_produto = file.read()
+        try:
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_produto, produto)
+            produto_filted = cursor.fetchall()
+            cursor.close()
+            if produto_filted:
+                return True
+            else:
+                return False
+            
+            
+        except con.Error as e:
+            return False
+            
     def insert_produto(data: dict):
         data['status_produto'] = 1
         values_Produto = tuple(data.values())

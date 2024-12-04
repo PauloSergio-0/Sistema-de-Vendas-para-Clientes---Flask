@@ -4,7 +4,7 @@ from flask import jsonify, json
 
 class Service_cliente:
     
-    def exists_cliente(id_cliente: int):
+    def _exists_cliente(id_cliente: int):
         value = (id_cliente,)
         
         with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
@@ -86,7 +86,7 @@ class Service_cliente:
     
     def delete_cliente( id_cliente: str):
         
-        if Service_cliente.exists_cliente(id_cliente):
+        if Service_cliente._exists_cliente(id_cliente):
             cliente = (id_cliente, )
             
             with open("app/sql/cliente_sql/delete_cliente.sql", 'r') as file:
