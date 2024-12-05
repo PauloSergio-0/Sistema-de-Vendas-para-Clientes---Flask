@@ -68,22 +68,27 @@ class Service_produto:
         
         with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
             sql_filter_produto = file.read()
+            
         
         connection = con.Connection(Loja_database().database_loja)
         cursor = connection.cursor()
         cursor.execute(sql_filter_produto, produto)
         produto_filted = cursor.fetchall()
         cursor.close()
-        for item in produto_filted:
-            json_produto = {
-                    "id_produto": item[0],
-                    "nome_produto": item[1],
-                    "codigo_produto": item[2],
-                    "categoria_produto": item[3],
-                    "preco_produto": item[4],
-                    "status_produto": item[5]
-                }
-        return json_produto
+        if produto_filted:
+            for item in produto_filted:
+                json_produto = {
+                        "id_produto": item[0],
+                        "nome_produto": item[1],
+                        "codigo_produto": item[2],
+                        "categoria_produto": item[3],
+                        "preco_produto": item[4],
+                        "status_produto": item[5]
+                    }
+            return json_produto
+        else:
+            return f"produto com id {id_produto} não existe"
+        
     
     def delete_produto(id_produto):
         
@@ -102,5 +107,23 @@ class Service_produto:
             else:
                 return f"produto com id {id_produto} não existe"
         except con.Error as e:
-            print(e)
-            return 'erro in database'
+            return 'erro in query'
+        
+    def desactivate_produto(id_produto):
+        
+        produto = (id_produto, )
+        
+        with open('app/sql/produto_sql/desactivate_produto.sql', 'r') as file:
+            sql_desactivate_produto = file.read()
+        try:    
+            if Service_produto._exists_produto(id_produto):
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_desactivate_produto, produto)
+                connection.commit()
+                cursor.close()
+                return f"produto com id {id_produto} desativado"
+            else:
+                return f"produto com id {id_produto} não existe"
+        except con.Error as e:
+            return 'erro in query'

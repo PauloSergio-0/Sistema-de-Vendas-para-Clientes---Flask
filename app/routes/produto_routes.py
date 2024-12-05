@@ -28,8 +28,13 @@ def register_produto_routes(app:Flask):
         id_produto = request.args.get('id_produto')
         return jsonify({'message': Service_produto.filter_produto(id_produto)})
     
-    @app.route('/delete/produto')
+    @app.route('/delete/produto', methods = ['GET'])
     def exlcluir_produto():
         id_produto = request.args.get("id_produto")
-        
         return jsonify({"message": Service_produto.delete_produto(id_produto)})
+
+
+    @app.route('/desactivate/produto', methods = ['GET'])
+    def desativar_produto():
+        id_produto = request.args.get("id_produto")
+        return jsonify({"message": Service_produto.desactivate_produto(id_produto)})

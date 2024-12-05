@@ -13,7 +13,9 @@ def register_venda_routes(app: Flask):
         if Validator.venda_json(json_venda):
             Service_venda.insert_venda(json_venda)
             
-        return jsonify({'message': "venda cadastrado"}), 201
+            return jsonify({'message': "venda cadastrada"}), 201
+        else:
+            return  jsonify({'message': "venda não cadastrada"}), 402
     
     @app.route("/listar/venda", methods=['GET'])
     def listar_venda():
@@ -34,5 +36,20 @@ def register_venda_routes(app: Flask):
         id_venda = request.args.get("id_venda")
         
         return jsonify({"message": Service_venda.delete_venda(id_venda)})
+    
+    
+    @app.route('/cancel/venda')
+    def cancelar_venda():
+        id_venda = request.args.get("id_venda")
         
+        return jsonify({"message": Service_venda.cancel_venda(id_venda)})
+    
+    @app.route('/sale/venda', methods = ['POST'])
+    def realzar_venda():
+        parametros = request.args.to_dict()
+        validacao_json_vendas = Validator.venda_json(parametros)
         
+        if validacao_json_vendas['status']:
+            return jsonify({'message': "venda cadastrada"}), 201
+        else:
+            return  jsonify({'message': validacao_json_vendas["message_error"]}), 402
