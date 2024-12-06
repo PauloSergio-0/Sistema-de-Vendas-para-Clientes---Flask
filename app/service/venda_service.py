@@ -1,5 +1,7 @@
 import sqlite3 as con
 from database.session import Loja_database
+from .cliente_service import Service_cliente
+from .produto_service import Service_produto
 from flask import jsonify
 from datetime import date
 import json
@@ -170,15 +172,21 @@ class Service_venda:
         except con.Error:
             return 'error in query'    
         
+    @staticmethod
     def sale_venda(data: dict):
-        data['status_venda'] = 1
-        values_Venda = tuple(data.values())
+        id_cliente = data['id_cliente']
+        id_produto = data['id_produto']
         
-        with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
-            sql_insert_venda = file.read()
+        if Service_produto._produto_status(id_produto)['result']  and Service_cliente._cliente_status(id_cliente)['result'] == 1:
+            data['status_venda'] = 1
+            values_Venda = tuple(data.values())
             
-        connection = con.Connection(Loja_database().database_loja)
-        cursor = connection.cursor()
-        cursor.execute(sql_insert_venda, values_Venda)
-        connection.commit()
-        cursor.close()
+            with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
+                sql_insert_venda = file.read()
+                
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_insert_venda, values_Venda)
+            connection.commit()
+            cursor.close()
+            

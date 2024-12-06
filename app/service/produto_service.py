@@ -23,6 +23,16 @@ class Service_produto:
         except con.Error as e:
             return False
             
+            
+    def _produto_status(id_produto):
+        
+        if Service_produto._exists_produto(id_produto):
+            produto = Service_produto.filter_produto(id_produto)
+            return {'result': True, 'status_pruduto':produto['status_produto']}
+        else:
+            return {'result': False}
+        
+        
     def insert_produto(data: dict):
         data['status_produto'] = 1
         values_Produto = tuple(data.values())

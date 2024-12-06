@@ -20,6 +20,13 @@ class Service_cliente:
         else:
             return False
     
+    def _cliente_status(id_cliente):
+        
+        if Service_cliente._exists_cliente(id_cliente):
+            cliente = Service_cliente.filter_cliente(id_cliente)
+            return {'result': True,'status': cliente['status_cliente']}
+        else:
+            return {"result": False}
     
     def insert_cliente(data: dict):
         data["status_cliente"] = 1
