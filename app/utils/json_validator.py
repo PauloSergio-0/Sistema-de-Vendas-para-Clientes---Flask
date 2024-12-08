@@ -55,14 +55,16 @@ class Validator:
             
             if keys not in keys_json_venda:
                 return {"status": False, "message_error": f"A chave '{keys}' não é válida para o serviço."}
-            print(keys, values, type(values))
-            print(f'data: {Validator._is_Date(string =str(values))}')
             
             if type(values) == int and (values is None or values < 1) and keys in keys_INT_json_venda:
                 return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio ou com número inválido."}
             
-            elif type(values) == str and (not values.strip()) and keys == 'data' and not Validator._is_Date(string =values):
-                return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio ou no formato errado.\n valor: {values}"}
+            
+            elif type(values) == str and not values.strip() and keys == 'data':
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio."}
+            
+            elif type(values) == str and keys == 'data' and not Validator._is_Date(string =values):
+                return {"status": False, "message_error": f"A chave '{keys}' está no formato errado.\n valor: {values}"}
                 
             elif (keys in keys_INT_json_venda and type(values) == str) or (keys not in keys_INT_json_venda and type(values) == int):
                 return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(keys)}."}
