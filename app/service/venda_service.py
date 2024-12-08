@@ -172,21 +172,22 @@ class Service_venda:
         except con.Error:
             return 'error in query'    
         
-    @staticmethod
+    
     def sale_venda(data: dict):
         id_cliente = data['id_cliente']
         id_produto = data['id_produto']
-        
+        print(data)
         if Service_produto._produto_status(id_produto)['result']  and Service_cliente._cliente_status(id_cliente)['result'] == 1:
-            data['status_venda'] = 1
-            values_Venda = tuple(data.values())
+            # data['status_venda'] = 1
+            # values_Venda = tuple(data.values())
             
-            with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
-                sql_insert_venda = file.read()
+            # with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
+            #     sql_insert_venda = file.read()
                 
-            connection = con.Connection(Loja_database().database_loja)
-            cursor = connection.cursor()
-            cursor.execute(sql_insert_venda, values_Venda)
-            connection.commit()
-            cursor.close()
+            # connection = con.Connection(Loja_database().database_loja)
+            # cursor = connection.cursor()
+            # cursor.execute(sql_insert_venda, values_Venda)
+            # connection.commit()
+            # cursor.close()
             
+            return jsonify({"message": "Venda concluída com sucesso"})
