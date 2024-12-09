@@ -7,13 +7,18 @@ from decorators.jwt_required import jwt_required
 def register_clientes_routes(app: Flask):
     
     @app.route('/cadastro/cliente', methods = ['POST'])
-    @jwt_required
+    # @jwt_required
     def cadastrar_clientes():
         json_cliente = request.get_json()
         
-        if Validator.cliente_json(json_cliente):
-            Service_cliente.insert_cliente(json_cliente)
-        return jsonify({"mensage": "cliente cadastrado"}), 201
+        
+        validador_json_cliente = Validator.cliente_json(json_cliente)
+        if validador_json_cliente["status"]:
+            # Service_cliente.insert_cliente(json_cliente)
+            return jsonify({"mensage": "cliente cadastrado"}), 201
+        else:
+            return jsonify({"error": validador_json_cliente["message_error"]}), 400
+            
     
 
     @app.route('/listar/cliente', methods = ['GET'])

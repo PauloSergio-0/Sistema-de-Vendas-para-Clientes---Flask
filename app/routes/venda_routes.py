@@ -48,10 +48,16 @@ def register_venda_routes(app: Flask):
     def realzar_venda():
         json_venda = request.get_json()
         validacao_json_vendas = Validator.venda_json(json_venda)
-        
+
         if validacao_json_vendas['status']:
-            print(validacao_json_vendas['status'])
-            Service_venda.sale_venda(json_venda)
-            return jsonify({'message': "venda cadastrada"}), 201
+
+            transacao_venda = Service_venda.sale_venda(json_venda)
+
+            if transacao_venda['status']:
+                return jsonify({'message': transacao_venda['message']}), 201
+
+            else:
+                return jsonify({'message': transacao_venda['message']}), 400
+
         else:
             return  jsonify({'message': validacao_json_vendas["message_error"]}), 402

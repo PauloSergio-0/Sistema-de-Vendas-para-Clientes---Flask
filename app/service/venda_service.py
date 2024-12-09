@@ -174,20 +174,38 @@ class Service_venda:
         
     
     def sale_venda(data: dict):
-        id_cliente = data['id_cliente']
-        id_produto = data['id_produto']
-        print(data)
-        if Service_produto._produto_status(id_produto)['result']  and Service_cliente._cliente_status(id_cliente)['result'] == 1:
-            # data['status_venda'] = 1
-            # values_Venda = tuple(data.values())
-            
-            # with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
-            #     sql_insert_venda = file.read()
+        
+        produto_validated = Service_produto._produto_status(data['id_produto'])
+        cliente_validated = Service_cliente._cliente_status(data['id_cliente'])
+        
+        exists_produto_venda: bool = (produto_validated['result']  and cliente_validated['result'])
+        
+        
+        
+        
+        if exists_produto_venda :
+            if (produto_validated["status_produto"] == 'ativo') and (cliente_validated['status_cliente'] == 'ativo'):
+                data['status_venda'] = 1
+                values_Venda = tuple(data.values())
                 
-            # connection = con.Connection(Loja_database().database_loja)
-            # cursor = connection.cursor()
-            # cursor.execute(sql_insert_venda, values_Venda)
-            # connection.commit()
-            # cursor.close()
+                with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
+                    sql_insert_venda = file.read()
+                    
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_insert_venda, values_Venda)
+                connection.commit()
+                cursor.close()
             
-            return jsonify({"message": "Venda concluída com sucesso"})
+                return {"status": True, "message": "Venda concluída com sucesso"}
+
+            else:
+                for key, values in {"Produto":  (produto_validated["status_produto"] == 'ativo'), "Cliente": (cliente_validated['status_cliente'] == 'ativo')}.items():
+                    if not values:
+                        return {"status": False, "message": f"o {key} não é válido para realizar venda"}
+        else:
+            if not exists_produto_venda:
+                for key, values in {"Produto": produto_validated['result'], "Cliente": cliente_validated['result']}.items():
+                    if not values:
+                        return {"status": False, "message": f"o {key} não existe para realizar venda"}
+            

@@ -11,10 +11,14 @@ def register_produto_routes(app:Flask):
         
         json_produto = request.get_json()
         
-        if Validator.produto_json(json_produto):
+        validador_json_produto = Validator.produto_json(json_produto)
+        
+        if validador_json_produto["status"]:
             Service_produto.insert_produto(json_produto)
             
-        return jsonify({'message': "produto cadastrado"}), 201
+            return jsonify({'message': "produto cadastrado"}), 201
+        else:
+            return jsonify({"error": validador_json_produto["message_error"]})
     
     @app.route("/listar/produto", methods = ['GET'])
     def listar_produto():

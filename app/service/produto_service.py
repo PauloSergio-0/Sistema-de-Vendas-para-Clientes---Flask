@@ -28,7 +28,7 @@ class Service_produto:
         
         if Service_produto._exists_produto(id_produto):
             produto = Service_produto.filter_produto(id_produto)
-            return {'result': True, 'status_pruduto':produto['status_produto']}
+            return {'result': True, 'status_produto':produto['status_produto']}
         else:
             return {'result': False}
         

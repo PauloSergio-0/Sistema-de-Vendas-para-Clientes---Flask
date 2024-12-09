@@ -24,7 +24,7 @@ class Service_cliente:
         
         if Service_cliente._exists_cliente(id_cliente):
             cliente = Service_cliente.filter_cliente(id_cliente)
-            return {'result': True,'status': cliente['status_cliente']}
+            return {'result': True,'status_cliente': cliente['status_cliente']}
         else:
             return {"result": False}
     

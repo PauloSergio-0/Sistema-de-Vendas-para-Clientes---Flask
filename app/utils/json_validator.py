@@ -10,66 +10,73 @@ class Validator:
         try:
             datetime.strptime(string, date_format)
             return True
+
         except ValueError:
             return False
-    
-    
-    
-    def cliente_json(json:dict):
-        
-        keys_json_clientes = {'id', 'nome', 'endereco', 'contato'}
-        
-        for keys, values in json.items():
-            
-            if keys not in keys_json_clientes :
-                raise jsonify({"error": f"A chave '{keys}' não é válida para o serviço."})
-            
-            if  values is None:
-                raise jsonify({"error": f"A chave '{keys}' está com o valor vázio."})
-            
 
-        return True
-            
-    def produto_json(json: dict):
-        
-        keys_json_produto = {"id", "nome", "Codigo", "categoria", "preco"}
-        
+    def cliente_json(json:dict):
+
+        keys_json_clientes = {'id', 'nome', 'endereco', 'contato'}
+
         for keys, values in json.items():
-            
+
+            if keys not in keys_json_clientes :
+                return {"status": False, "message_error": f"A chave '{keys}' não é válida para o serviço."}
+
+            if  (type(values) == int and keys == 'id') and (values is None or values < 1):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor menor que 1.  valor: {values}"}
+
+            elif (type(values) == str and keys in {'nome', 'endereco', 'contato'}) and (values is None or not values.strip()):
+                return  {"status": False, "message_error": f"A chave '{keys}' está com o valor vazio."}
+
+            elif (type(values) == int and not keys == 'id') or (type(values) == str and not keys in {'nome', 'endereco', 'contato'}):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(values)}."}
+
+        return {"status": True}
+
+    def produto_json(json: dict):
+
+        keys_json_produto = {"id", "nome", "Codigo", "categoria", "preco"}
+
+        for keys, values in json.items():
+
             if keys not in keys_json_produto:
-                return jsonify({"error": f"A chave '{keys}' não é válida para o serviço."}), 401
-            
-            if values is None:
-                return jsonify({"error": f"A chave '{keys}' está com o valor vázio."})
-            
-            
-        return True
-            
+                return {"status": False, "message_error": f"A chave '{keys}' não é válida para o serviço."}
+
+            if  (type(values) == int and keys == "id") and (values is None or values < 1):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor menor que 1.  valor: {values}"}
+
+            elif (type(values) == str and keys in {"nome", "Codigo", "categoria"}) and (values is None or not values.strip()):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor vazio."}
+
+            elif (type(values) == float and keys == 'preco') and (values is None or values < 0):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor menor que 0.  valor: {values}"}
+
+            elif (type(values) == str and not keys in {"nome", "Codigo", "categoria"}) or (type(values) == int and not keys == 'id') or (type(values) == float and not keys == 'preco'):
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(values)}."}
+
+        return {"status": True}
+
     def venda_json(json: dict):
-        
+
         keys_json_venda = {"id_cliente", "id_produto", "qtd", "data"}
         keys_INT_json_venda = {"id_cliente", "id_produto", "qtd"}
-        
-        
+
         for keys, values in json.items():
-            
+
             if keys not in keys_json_venda:
                 return {"status": False, "message_error": f"A chave '{keys}' não é válida para o serviço."}
-            
+
             if type(values) == int and (values is None or values < 1) and keys in keys_INT_json_venda:
                 return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio ou com número inválido."}
-            
-            
-            elif type(values) == str and not values.strip() and keys == 'data':
+
+            elif type(values) == str and keys == 'data' and not values.strip():
                 return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio."}
-            
-            elif type(values) == str and keys == 'data' and not Validator._is_Date(string =values):
-                return {"status": False, "message_error": f"A chave '{keys}' está no formato errado.\n valor: {values}"}
-                
+
+            elif type(values) == str and keys == 'data' and not Validator._is_Date(string = values):
+                return {"status": False, "message_error": f"A chave '{keys}' está no formato errado. valor: {values}"}
+
             elif (keys in keys_INT_json_venda and type(values) == str) or (keys not in keys_INT_json_venda and type(values) == int):
-                return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(keys)}."}
-            
-            
-        
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(values)}."}
+
         return {"status": True}
-        
