@@ -31,14 +31,14 @@ def register_venda_routes(app: Flask):
         data_venda: str = request.args.get("data_venda")
         return jsonify({"mensage": Service_venda.filter_date_vendas(data_venda)})
     
-    @app.route('/delete/venda')
+    @app.route('/delete/venda', methods = ['POST'])
     def exluir_venda():
         id_venda = request.args.get("id_venda")
         
         return jsonify({"message": Service_venda.delete_venda(id_venda)})
     
     
-    @app.route('/cancel/venda')
+    @app.route('/cancel/venda', methods = ['POST'])
     def cancelar_venda():
         id_venda = request.args.get("id_venda")
         
