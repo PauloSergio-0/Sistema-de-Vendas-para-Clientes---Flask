@@ -7,8 +7,7 @@ from decorators.jwt_required import jwt_required
 def register_clientes_routes(app: Flask):
     
     @app.route('/cadastro/cliente', methods = ['POST'])
-    @jwt_required
-    
+    @jwt_required   
     def cadastrar_clientes():
         """
             _summary_
@@ -16,9 +15,10 @@ def register_clientes_routes(app: Flask):
             Rota protegida para a receber um JSON que seus dados serao inseridos no banco de dados
             
             Nesta rota recebe-se um JSON onde será válidado no metodo 'Validator.cliente_json()' onde vai verificar a 
-            integridade do conteudo ex: tipo, formato e valides do campo, tambem com a capacidade de retornar o erro em especifico facilitando a manutenção em caso de falhas.
+            integridade do conteudo ex: tipo, formato e valides do campo, tambem com a capacidade de retornar o erro em
+            especifico facilitando a manutenção em caso de falhas.
             
-            Caso o JSON seja valido elo pasa para a fase de inserção de dados no banco de dados pelo metodo 'Service_cliente.insert_cliente()'
+            Caso o JSON seja valido elo pasa para a fase de inserção de dados no banco pelo metodo 'Service_cliente.insert_cliente()'
         """
         try:
             json_cliente = request.get_json()
@@ -45,22 +45,40 @@ def register_clientes_routes(app: Flask):
     def listar_cliente():
         """
             _summary_
+            
+            nesta rota retorna todos os clientes ativos, inativos e excluidos do banco
         
         """
         return {"message": Service_cliente.list_cliente()}
     
     @app.route("/filtro/cliente", methods = ['GET'])
     def filtro_cliente():
+        """_summary_
+
+        nesta rota retorna o cliente de acordo com o id
+        """
         id_cliente = request.args.get('id_cliente')
         
         return jsonify({"message": Service_cliente.filter_cliente(id_cliente)})
     
     @app.route("/delete/cliente", methods = ['GET'])
     def delete_cliente():
+        
+        
+        """_summary_
+
+        
+            rota que exclui logicamente um cliente
+        """
+        
         id_cliente = request.args.get("id_cliente")
         return jsonify({"message": Service_cliente.delete_cliente(id_cliente)})
     
     @app.route("/desactivate/cliente", methods = ['GET'])
     def desativar_cliente():
+        """_summary_
+
+       rota que desativa logicamente um cliente
+        """
         id_cliente = request.args.get("id_cliente")
         return jsonify({"message": Service_cliente.desactivate_cliente(id_cliente)})
