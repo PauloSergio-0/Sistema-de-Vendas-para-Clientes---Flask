@@ -40,24 +40,28 @@ def register_venda_routes(app: Flask):
     
     @app.route('/cancel/venda', methods = ['POST'])
     def cancelar_venda():
-        id_venda = request.args.get("id_venda")
+        id_venda: int = request.args.get("id_venda")
         
         return jsonify({"message": Service_venda.cancel_venda(id_venda)})
     
     @app.route('/sale/venda', methods = ['POST'])
     def realzar_venda():
+        """
+            Esta rota é responsavel por realizar a venda verificando a existencia do cliente e produto e 
+            se sao aptos para o prosseguimento da venda
+        """
         json_venda = request.get_json()
         validacao_json_vendas = Validator.venda_json(json_venda)
 
         if validacao_json_vendas['status']:
 
-            transacao_venda = Service_venda.sale_venda(json_venda)
+            transacao_venda: dict = Service_venda.sale_venda(json_venda)
 
             if transacao_venda['status']:
                 return jsonify({'message': transacao_venda['message']}), 201
 
             else:
-                return jsonify({'message': transacao_venda['message']}), 400
+                return jsonify({'message': transacao_venda['message'], 'status': transacao_venda["status_elemento"]}), 400
 
         else:
-            return  jsonify({'message': validacao_json_vendas["message_error"]}), 402
+            return  jsonify({'message': validacao_json_vendas["message_error"]}), 400

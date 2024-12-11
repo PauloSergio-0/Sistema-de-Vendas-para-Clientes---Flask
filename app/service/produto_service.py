@@ -5,7 +5,7 @@ from database.session import Loja_database
 class Service_produto:
     
     
-    def _exists_produto(id_produto: int):
+    def _exists_produto(id_produto: int):# verifica a existencia do produto
         produto = (id_produto, )
         
         with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
@@ -24,7 +24,7 @@ class Service_produto:
             return False
             
             
-    def _produto_status(id_produto):
+    def _produto_status(id_produto):# retorna o status se o produto existir
         
         if Service_produto._exists_produto(id_produto):
             produto = Service_produto.filter_produto(id_produto)
@@ -33,8 +33,9 @@ class Service_produto:
             return {'result': False}
         
         
-    def insert_produto(data: dict):
-        data['status_produto'] = 1
+    def insert_produto(data: dict): # insere produto no banco de dados
+        
+        data['status_produto'] = 1 # adciona o status automáticamente como 1: ativado
         values_Produto = tuple(data.values())
         
         with open('app/sql/produto_sql/insert_into_produto.sql', 'r') as file:
@@ -47,7 +48,7 @@ class Service_produto:
         cursor.close()
 
 
-    def list_produto():
+    def list_produto(): # retornar todos os produtos
         
         with open('app/sql/produto_sql/list_produto.sql', 'r') as file:
             sql_list_produto = file.read()

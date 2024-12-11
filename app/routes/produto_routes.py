@@ -8,7 +8,7 @@ def register_produto_routes(app:Flask):
     @app.route("/cadastro/produto", methods=["POST"])
     @jwt_required
     def insert_produto():
-        
+
         json_produto = request.get_json()
         
         validador_json_produto = Validator.produto_json(json_produto)

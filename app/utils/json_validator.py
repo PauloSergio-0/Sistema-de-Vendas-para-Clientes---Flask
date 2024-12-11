@@ -2,10 +2,24 @@ from flask import jsonify
 from datetime import datetime
 
 
-# TODO: ajustar  validadores para uma dict
 class Validator:
 
+    """
+        Esta classe é respónsavel por conter um conjunto de validadores dos JSONs recebidos para prosseguir com
+        a execuções das rotas.
+        
+        Retornar dois valores um boleano (True ou False) 
+        
+        caso encontre um erro retorna False em conjunto com uma mendagem de erro para especificalo
+    """
+
     def _is_Date(string: str, date_format = "%Y-%m-%d"):
+        
+        """
+            Para verificar se o valor está do formato de data  
+
+            retorna um boleano necessario para a valides do coteudo do JSON
+        """
         
         try:
             datetime.strptime(string, date_format)
@@ -80,3 +94,4 @@ class Validator:
                 return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(values)}."}
 
         return {"status": True}
+    

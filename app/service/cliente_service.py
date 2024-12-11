@@ -4,7 +4,7 @@ from flask import jsonify, json
 
 class Service_cliente:
     
-    def _exists_cliente(id_cliente: int):
+    def _exists_cliente(id_cliente: int):# verifica se existe o cliente 
         value = (id_cliente,)
         
         with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
@@ -20,7 +20,7 @@ class Service_cliente:
         else:
             return False
     
-    def _cliente_status(id_cliente):
+    def _cliente_status(id_cliente): # verifica o status do cliente
         
         if Service_cliente._exists_cliente(id_cliente):
             cliente = Service_cliente.filter_cliente(id_cliente)
@@ -28,7 +28,14 @@ class Service_cliente:
         else:
             return {"result": False}
     
-    def insert_cliente(data: dict):
+    def insert_cliente(data: dict): 
+        
+        """
+            Esse metodo é  responsavel pela a inserção no banco de dados
+        
+        
+        """
+        
         data["status_cliente"] = 1
         values_cliente = tuple(data.values())
         
@@ -42,7 +49,7 @@ class Service_cliente:
         cursor.close()
 
     
-    def list_cliente():
+    def list_cliente(): # lista todos os clientes idependente do status
         
         with open('app/sql/cliente_sql/list_cliente.sql', 'r') as file:
             sql_list_cliente = file.read()
@@ -51,7 +58,9 @@ class Service_cliente:
         cursor = connection.cursor()
         cursor.execute(sql_list_cliente)
         clientes = cursor.fetchall()
+        
         lista_clientes = []
+        
         for row in clientes:
             json_lista_cliente = {
                 "id_cliente": row[0],
@@ -60,12 +69,14 @@ class Service_cliente:
                 "contato_cliente": row[3],
                 "status_cliente": row[4]
             }
+            
             lista_clientes.append(json_lista_cliente)
+            
         cursor.close()
         
         return lista_clientes
 
-    def filter_cliente(id_cliente: int):
+    def filter_cliente(id_cliente: int): # filtra pelo id 
         value = (id_cliente,)
         
         with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
@@ -91,7 +102,7 @@ class Service_cliente:
         else:
             return f'Não existe cliente com esse id: {id_cliente}'
 
-    def delete_cliente( id_cliente: str):
+    def delete_cliente( id_cliente: str):# deleta logicamente
         
         if Service_cliente._exists_cliente(id_cliente):
             cliente = (id_cliente, )
@@ -112,7 +123,7 @@ class Service_cliente:
         else:
             return f'Não existe cliente com esse id: {id_cliente}'
         
-    def desactivate_cliente( id_cliente: str):
+    def desactivate_cliente( id_cliente: str):# desativa logicamente
         
         if Service_cliente._exists_cliente(id_cliente):
             cliente = (id_cliente, )

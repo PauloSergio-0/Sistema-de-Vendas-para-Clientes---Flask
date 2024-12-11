@@ -44,18 +44,19 @@ def register_clientes_routes(app: Flask):
     @app.route('/listar/cliente', methods = ['GET'])
     def listar_cliente():
         """
-            _summary_
+            Rota para listar todos os clientes do banco de dados.
             
-            nesta rota retorna todos os clientes ativos, inativos e excluidos do banco
+            Retorna  ativos, inativos e excluidos.
         
         """
         return {"message": Service_cliente.list_cliente()}
     
     @app.route("/filtro/cliente", methods = ['GET'])
     def filtro_cliente():
-        """_summary_
+        """
+            Rora para exibir cliente pelo seu 'id' que deve ser recebido via parametro
 
-        nesta rota retorna o cliente de acordo com o id
+            Retorno o cliente de acordo com a id selecionada.
         """
         id_cliente = request.args.get('id_cliente')
         
@@ -64,11 +65,11 @@ def register_clientes_routes(app: Flask):
     @app.route("/delete/cliente", methods = ['GET'])
     def delete_cliente():
         
-        
-        """_summary_
+        """
+            Rota para deletar de forma lógica um cliente pelo seu id
 
         
-            rota que exclui logicamente um cliente
+            Retorna a mensagem de cofirmação de cliente excluido 
         """
         
         id_cliente = request.args.get("id_cliente")
@@ -76,9 +77,11 @@ def register_clientes_routes(app: Flask):
     
     @app.route("/desactivate/cliente", methods = ['GET'])
     def desativar_cliente():
-        """_summary_
+        """
+            Rota para desativatr de forma lógica um cliente pelo seu id
 
-       rota que desativa logicamente um cliente
+        
+            RetRetorna a mensagem de cofirmação de cliente desativado
         """
         id_cliente = request.args.get("id_cliente")
         return jsonify({"message": Service_cliente.desactivate_cliente(id_cliente)})

@@ -7,7 +7,7 @@ from datetime import date
 import json
 class Service_venda:
     
-    def _exists_vendas(id_venda: int):
+    def _exists_vendas(id_venda: int):# verifica a existência da venad
         venda = (id_venda, )
         
         with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
@@ -173,18 +173,17 @@ class Service_venda:
             return 'error in query'    
         
     
-    def sale_venda(data: dict):
+    def sale_venda(data: dict):# realiza a venda
         
-        produto_validated = Service_produto._produto_status(data['id_produto'])
-        cliente_validated = Service_cliente._cliente_status(data['id_cliente'])
+        produto_validated = Service_produto._produto_status(data['id_produto'])# retorna o status do produto se existir
+        cliente_validated = Service_cliente._cliente_status(data['id_cliente'])# retorna o status do cliente se existir
         
-        exists_produto_venda: bool = (produto_validated['result']  and cliente_validated['result'])
-        
-        
-        
+        exists_produto_venda: bool = (produto_validated['result']  and cliente_validated['result']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
         
         if exists_produto_venda :
+            # se ambos existirem avança para a proxima condicional que verificar se os ststus estão aptos para a venda
             if (produto_validated["status_produto"] == 'ativo') and (cliente_validated['status_cliente'] == 'ativo'):
+                
                 data['status_venda'] = 1
                 values_Venda = tuple(data.values())
                 
@@ -200,9 +199,10 @@ class Service_venda:
                 return {"status": True, "message": "Venda concluída com sucesso"}
 
             else:
-                for key, values in {"Produto":  (produto_validated["status_produto"] == 'ativo'), "Cliente": (cliente_validated['status_cliente'] == 'ativo')}.items():
-                    if not values:
-                        return {"status": False, "message": f"o {key} não é válido para realizar venda"}
+                for key, values in {"Produto":  produto_validated["status_produto"], "Cliente": cliente_validated['status_cliente']}.items():
+                    if not values  == 'ativo':
+                        return {"status": False, "message": f"o {key} não é válido para realizar venda.",
+                                "status_elemento": f"{values}"}
         else:
             if not exists_produto_venda:
                 for key, values in {"Produto": produto_validated['result'], "Cliente": cliente_validated['result']}.items():
