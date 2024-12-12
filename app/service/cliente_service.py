@@ -33,7 +33,6 @@ class Service_cliente:
         """
             Esse metodo é  responsavel pela a inserção no banco de dados
         
-        
         """
         
         data["status_cliente"] = 1

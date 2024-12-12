@@ -37,7 +37,7 @@ def register_clientes_routes(app: Flask):
             else:
                     return jsonify({"error": "JSON não recebido"}), 400
         except Exception as e:
-                return jsonify({"error": f"Não foi possível concluir o serviso devido o erro: {e}"}), 400
+                return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
             
     
 
@@ -58,9 +58,15 @@ def register_clientes_routes(app: Flask):
 
             Retorno o cliente de acordo com a id selecionada.
         """
-        id_cliente = request.args.get('id_cliente')
-        
-        return jsonify({"message": Service_cliente.filter_cliente(id_cliente)})
+        try:
+            id_cliente = request.args.get('id_cliente')
+            
+            if id_cliente:
+                return jsonify({"message": Service_cliente.filter_cliente(id_cliente)})
+            else:
+                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+        except Exception as e:
+            return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
     @app.route("/delete/cliente", methods = ['GET'])
     def delete_cliente():
@@ -71,17 +77,33 @@ def register_clientes_routes(app: Flask):
         
             Retorna a mensagem de cofirmação de cliente excluido 
         """
+        try:
+            id_cliente = request.args.get("id_cliente")
+            if id_cliente:
+                return jsonify({"message": Service_cliente.delete_cliente(id_cliente)}),201
+            else:
+                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+            
+        except Exception as e:
+            return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
         
-        id_cliente = request.args.get("id_cliente")
-        return jsonify({"message": Service_cliente.delete_cliente(id_cliente)})
-    
     @app.route("/desactivate/cliente", methods = ['GET'])
     def desativar_cliente():
         """
             Rota para desativatr de forma lógica um cliente pelo seu id
 
-        
             RetRetorna a mensagem de cofirmação de cliente desativado
         """
-        id_cliente = request.args.get("id_cliente")
-        return jsonify({"message": Service_cliente.desactivate_cliente(id_cliente)})
+
+        try:
+
+            id_cliente = request.args.get("id_cliente")
+
+            if id_cliente:
+                return jsonify({"message": Service_cliente.desactivate_cliente(id_cliente)})
+            
+            else:
+                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+
+        except Exception as e:
+            return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
