@@ -9,6 +9,7 @@ def register_venda_routes(app: Flask):
     @jwt_required
     def insert_venda():
         try:
+
             json_venda = request.get_json()
             
             if json_venda:
