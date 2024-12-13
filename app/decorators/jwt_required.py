@@ -5,6 +5,7 @@ from functools import wraps
 def jwt_required(f):
     
     @wraps(f)
+    
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         

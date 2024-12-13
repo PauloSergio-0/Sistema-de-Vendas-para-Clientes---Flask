@@ -24,7 +24,7 @@ class Service_produto:
             return False
             
             
-    def _produto_status(id_produto):# retorna o status se o produto existir
+    def _produto_status(id_produto: int):# retorna o status se o produto existir
         
         if Service_produto._exists_produto(id_produto):
             produto = Service_produto.filter_produto(id_produto)
@@ -101,7 +101,7 @@ class Service_produto:
             return f"produto com id {id_produto} não existe"
         
     
-    def delete_produto(id_produto):
+    def delete_produto(id_produto: int):
         
         produto = (id_produto, )
         
@@ -120,7 +120,7 @@ class Service_produto:
         except con.Error as e:
             return 'erro in query'
         
-    def desactivate_produto(id_produto):
+    def desactivate_produto(id_produto: int):
         
         produto = (id_produto, )
         

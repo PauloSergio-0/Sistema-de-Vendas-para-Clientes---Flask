@@ -20,7 +20,7 @@ class Service_cliente:
         else:
             return False
     
-    def _cliente_status(id_cliente): # verifica o status do cliente
+    def _cliente_status(id_cliente: int): # verifica o status do cliente
         
         if Service_cliente._exists_cliente(id_cliente):
             cliente = Service_cliente.filter_cliente(id_cliente)
