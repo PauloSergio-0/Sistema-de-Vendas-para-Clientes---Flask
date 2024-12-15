@@ -12,7 +12,7 @@ from functools import wraps
 
 def jwt_required(f):
     
-    @wraps(f)
+    @wraps(f) # preserva a informacao da rota
     
     def decorated_function(*args, **kwargs):
         
@@ -34,5 +34,5 @@ def jwt_required(f):
         # if not request.user == 'FastAPI':
         #     return jsonify({"error": "Token.user inválido"}), 402
 
-        return f(*args, **kwargs)
-    return decorated_function
+        return f(*args, **kwargs) # repassa informação para a função original da rota
+    return decorated_function 
