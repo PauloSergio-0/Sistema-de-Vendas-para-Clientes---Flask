@@ -30,9 +30,9 @@ def jwt_required(f):
             return jsonify({"error": "Token inválido ou expirado"}), 401
         
         request.user = payload
-        
-        # if not request.user == 'FastAPI':
-        #     return jsonify({"error": "Token.user inválido"}), 402
+
+        if not request.user['sub'] == 'FastAPIa':
+            return jsonify({"error": "Token.user inválido"}), 402
 
         return f(*args, **kwargs) # repassa informação para a função original da rota
     return decorated_function 

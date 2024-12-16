@@ -15,7 +15,7 @@ def register_venda_routes(app: Flask):
             if json_venda:
             
                 if Validator.venda_json(json_venda):
-                    Service_venda.insert_venda(json_venda)
+                    # Service_venda.insert_venda(json_venda)
                     
                     return jsonify({'message': "venda cadastrada"}), 201
                 else:
@@ -27,7 +27,20 @@ def register_venda_routes(app: Flask):
     
     @app.route("/listar/venda", methods=['GET'])
     def listar_venda():
-        return jsonify({"vendas":Service_venda.list_venda()})
+        
+        try:
+            
+            lista_venda = Service_venda.list_venda()
+            if lista_venda['status']:
+                return jsonify({"vendas": lista_venda['content']})
+            
+            else:
+                return jsonify({"error": f"Não é possivel concluir operação: {lista_venda['message_error']}"})
+                
+        
+        except Exception as e:
+            return jsonify({"error": f"Não foi possivel concluir serviço: {e}"}), 401
+            
     
     @app.route("/filtro/venda", methods = ['GET'])
     def filtro_venda():
