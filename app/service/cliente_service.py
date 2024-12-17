@@ -5,19 +5,22 @@ from flask import jsonify, json
 class Service_cliente:
     
     def _exists_cliente(id_cliente: int):# verifica se existe o cliente 
-        value = (id_cliente,)
-        
-        with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
-            sql_filter_cliente = file.read()
+        try:
+            value = (id_cliente,)
+            
+            with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
+                sql_filter_cliente = file.read()
 
-        connection = con.Connection(Loja_database().database_loja)
-        cursor = connection.cursor()
-        cursor.execute(sql_filter_cliente, value)
-        cliente = cursor.fetchall()
-        cursor.close()
-        if cliente:
-            return True
-        else:
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_cliente, value)
+            cliente = cursor.fetchall()
+            cursor.close()
+            if cliente:
+                return True
+            else:
+                return False
+        except:
             return False
     
     def _cliente_status(id_cliente: int): # verifica o status do cliente
@@ -111,25 +114,25 @@ class Service_cliente:
                             "status_cliente": item[4]
                         }
                     return {"status": True, "content" :json_lista_cliente}
-                
+
             else:
                 return {"status": False, "message_error" :f'Não existe cliente com esse id: {id_cliente}'}
-            
+
         except (Exception or con.Error) as e:
             return {"status": False, "message_error" : str(e)}
-            
+
 
     def delete_cliente( id_cliente: str):# deleta logicamente
-        
-        
+
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
-            status_cliente = Service_cliente._cliente_status(id_cliente)['status_cliente']
-            valid_status_del = ('ativo', 'inativo')
             
+            status_cliente =  Service_cliente._cliente_status(id_cliente)['status_cliente']
+            valid_status_del = ('ativo', 'inativo')
+
             if cliente_valitaded and status_cliente in valid_status_del:
                 cliente = (id_cliente, )
-                
+
                 with open("app/sql/cliente_sql/delete_cliente.sql", 'r') as file:
                     sql_delete_cliente = file.read()
 
@@ -138,40 +141,39 @@ class Service_cliente:
                 cursor.execute(sql_delete_cliente, cliente)
                 connection.commit()
                 cursor.close()
-                
+
                 return {"status": True, "message": f"O cliente {id_cliente} foi excluído"}
             else:
-                
+
                 if not cliente:
                     return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
-                
+
                 elif not status_cliente in valid_status_del:
                     return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
-            
+
         except (Exception or con.Error) as e:
                 return {"status": False, "message_error": f"Error in database query: {str(e)}"}
-            
+
     def desactivate_cliente( id_cliente: str):# desativa logicamente
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
             status_cliente = Service_cliente._cliente_status(id_cliente)['status_cliente']
-            
+
             if cliente_valitaded and status_cliente == 'ativo':
                 cliente = (id_cliente, )
-                
+
                 with open("app/sql/cliente_sql/desactivate_cliente.sql", 'r') as file:
                     sql_desactivate_cliente = file.read()
-                    
+
                     connection = con.Connection(Loja_database().database_loja)
                     cursor = connection.cursor()
                     cursor.execute(sql_desactivate_cliente, cliente)
                     connection.commit()
                     cursor.close()
                     return {"status": True, "message": f"O cliente {id_cliente} foi desativado"}
-                
+
             else:
                 return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
-            
+
         except (Exception or con.Error) as e:
                 return {"status": False, "message_error": str(e)}
-            

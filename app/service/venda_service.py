@@ -16,13 +16,13 @@ class Service_venda:
             connection = con.Connection(Loja_database().database_loja)
             cursor = connection.cursor()
             cursor.execute(sql_filter_venda, venda)
-            venda_filted =cursor.fetchall()
+            venda_filted = cursor.fetchall()
             cursor.close()
             if venda_filted:
                 return True
             else: 
                 return False
-        except con.Error as e:
+        except:
             return False
     
     def insert_venda(data: dict):

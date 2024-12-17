@@ -23,26 +23,18 @@ def register_clientes_routes(app: Flask):
         try:
 
             json_cliente = request.get_json()
-
-            if json_cliente:
-
-                validador_json_cliente = Validator.cliente_json(json_cliente)
-
-                if validador_json_cliente["status"]:
-
-                    cliente = Service_cliente.insert_cliente(json_cliente)
-                    
-                    if cliente['status']:
-                        return jsonify({"mensage": cliente['message']}), 201
-
-                    else:
-                        return jsonify({"error": cliente['message_error']}), 400
-
-                else:
-                    return jsonify({"error": validador_json_cliente["message_error"]}), 400
-
+            if not json_cliente:
+                return jsonify({"error": "JSON não recebido"}), 400
+            
+            validador_json_cliente = Validator.cliente_json(json_cliente)
+            if not validador_json_cliente["status"]:
+                return jsonify({"error": validador_json_cliente["message_error"]}), 400
+            
+            cliente = Service_cliente.insert_cliente(json_cliente)
+            if cliente['status']:
+                return jsonify({"mensage": cliente['message']}), 201
             else:
-                    return jsonify({"error": "JSON não recebido"}), 400
+                return jsonify({"error": cliente['message_error']}), 400
 
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
@@ -74,16 +66,15 @@ def register_clientes_routes(app: Flask):
         try:
             id_cliente = request.args.get('id_cliente')
             
-            if id_cliente:
-                
-                cliente = Service_cliente.filter_cliente(id_cliente)
-                
-                if cliente['status']:
-                    return jsonify({"message": cliente['content']})
-                else:
-                    return jsonify({"message": cliente['content']})
-            else:
+            if not id_cliente:
                 return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+            
+            cliente = Service_cliente.filter_cliente(id_cliente)
+            if cliente['status']:
+                return jsonify({"message": cliente['content']})
+            else:
+                return jsonify({"message": cliente['content']})
+            
         except Exception as e:
             return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
