@@ -15,7 +15,7 @@ def register_venda_routes(app: Flask):
             if json_venda:
             
                 if Validator.venda_json(json_venda):
-                    Service_venda.insert_venda(json_venda)
+                    venda = Service_venda.insert_venda(json_venda)
                     
                     return jsonify({'message': "venda cadastrada"}), 201
                 else:
@@ -47,6 +47,7 @@ def register_venda_routes(app: Flask):
         try:
             id_venda = request.args.get("id_venda")
             if id_venda:
+                venda = Service_venda.filter_vendas(id_venda)
                 return jsonify({"mensage": Service_venda.filter_vendas(id_venda)})
             else:
                 return jsonify({"error": "argumentos não identificados"}), 400

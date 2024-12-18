@@ -8,7 +8,7 @@ class Service_cliente:
         try:
             value = (id_cliente,)
             
-            with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
+            with open('app/sql/cliente_sql/status_cliente.sql', 'r') as file:
                 sql_filter_cliente = file.read()
 
             connection = con.Connection(Loja_database().database_loja)
@@ -17,11 +17,11 @@ class Service_cliente:
             cliente = cursor.fetchall()
             cursor.close()
             if cliente:
-                return True
+                return {'status': True, 'content': cliente}
             else:
-                return False
+                return {'status': False}
         except:
-            return False
+            return {'status': False}
     
     def _cliente_status(id_cliente: int): # verifica o status do cliente
         
@@ -94,29 +94,26 @@ class Service_cliente:
             
             with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
                 sql_filter_cliente = file.read()
-            if Service_cliente._exists_cliente(id_cliente):
-                connection = con.Connection(Loja_database().database_loja)
-                cursor = connection.cursor()
-                cursor.execute(sql_filter_cliente, value)
-                cliente = cursor.fetchall()
-                cursor.close()
+            
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_cliente, value)
+            cliente = cursor.fetchall()
+            cursor.close()
                 
-                if not cliente:
-                    return {"status": True, "content" : "Não existe clientes"}
+            if not cliente:
+                return {"status": False, "message_error" : f'Não existe cliente com esse id: {id_cliente}'}
+            
+            for item in cliente:
+                json_lista_cliente = {
+                    "id_cliente": item[0],
+                    "nome_cliente": item[1],
+                    "endereco_cliente": item[2],
+                    "contato_cliente": item[3],
+                    "status_cliente": item[4]
+                }
                 
-                else:
-                    for item in cliente:
-                        json_lista_cliente = {
-                            "id_cliente": item[0],
-                            "nome_cliente": item[1],
-                            "endereco_cliente": item[2],
-                            "contato_cliente": item[3],
-                            "status_cliente": item[4]
-                        }
-                    return {"status": True, "content" :json_lista_cliente}
-
-            else:
-                return {"status": False, "message_error" :f'Não existe cliente com esse id: {id_cliente}'}
+            return {"status": True, "content" :json_lista_cliente}
 
         except (Exception or con.Error) as e:
             return {"status": False, "message_error" : str(e)}
@@ -127,10 +124,10 @@ class Service_cliente:
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
             
-            status_cliente =  Service_cliente._cliente_status(id_cliente)['status_cliente']
+            # status_cliente =  Service_cliente._cliente_status(id_cliente)['status_cliente']
             valid_status_del = ('ativo', 'inativo')
 
-            if cliente_valitaded and status_cliente in valid_status_del:
+            if cliente_valitaded['status'] and cliente_valitaded['content'] in valid_status_del:
                 cliente = (id_cliente, )
 
                 with open("app/sql/cliente_sql/delete_cliente.sql", 'r') as file:
@@ -145,10 +142,10 @@ class Service_cliente:
                 return {"status": True, "message": f"O cliente {id_cliente} foi excluído"}
             else:
 
-                if not cliente:
+                if not cliente_valitaded['status']:
                     return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
 
-                elif not status_cliente in valid_status_del:
+                elif not cliente_valitaded['content'] in valid_status_del:
                     return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
 
         except (Exception or con.Error) as e:
@@ -157,20 +154,21 @@ class Service_cliente:
     def desactivate_cliente( id_cliente: str):# desativa logicamente
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
-            status_cliente = Service_cliente._cliente_status(id_cliente)['status_cliente']
+            # status_cliente = Service_cliente._cliente_status(id_cliente)['status_cliente']
 
-            if cliente_valitaded and status_cliente == 'ativo':
+            if cliente_valitaded['status'] and cliente_valitaded['content'] == 'ativo':
                 cliente = (id_cliente, )
 
                 with open("app/sql/cliente_sql/desactivate_cliente.sql", 'r') as file:
                     sql_desactivate_cliente = file.read()
 
-                    connection = con.Connection(Loja_database().database_loja)
-                    cursor = connection.cursor()
-                    cursor.execute(sql_desactivate_cliente, cliente)
-                    connection.commit()
-                    cursor.close()
-                    return {"status": True, "message": f"O cliente {id_cliente} foi desativado"}
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_desactivate_cliente, cliente)
+                connection.commit()
+                cursor.close()
+                
+                return {"status": True, "message": f"O cliente {id_cliente} foi desativado"}
 
             else:
                 return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}

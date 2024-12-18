@@ -10,7 +10,7 @@ class Service_venda:
     def _exists_vendas(id_venda: int):# verifica a existência da venad
         venda = (id_venda, )
         
-        with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
+        with open('app/sql/venda_sql/status_venda.sql', 'r') as file:
             sql_filter_venda = file.read()
         try:    
             connection = con.Connection(Loja_database().database_loja)
@@ -19,25 +19,30 @@ class Service_venda:
             venda_filted = cursor.fetchall()
             cursor.close()
             if venda_filted:
-                return True
+                return {'status': True, 'content': venda_filted}
             else: 
-                return False
+                return {'status': False}
         except:
-            return False
+            return {'status': False}
     
     def insert_venda(data: dict):
-        data['status_venda'] = 1
-        values_Venda = tuple(data.values())
-        
-        with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
-            sql_insert_venda = file.read()
+        try:
+            data['status_venda'] = 1
+            values_Venda = tuple(data.values())
             
-        connection = con.Connection(Loja_database().database_loja)
-        cursor = connection.cursor()
-        cursor.execute(sql_insert_venda, values_Venda)
-        connection.commit()
-        cursor.close()
-
+            with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
+                sql_insert_venda = file.read()
+                
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_insert_venda, values_Venda)
+            connection.commit()
+            cursor.close()
+            
+            return {'status': True, 'message': 'venda cadastrada'}
+        except (Exception or con.Error) as e:
+            return {'status': False, 'message_error': str(e)}
+        
     def list_venda():
         
         try:
@@ -73,34 +78,42 @@ class Service_venda:
             return {"status": False, "message_error": str(e)}
     
     def filter_vendas(id_venda: int):
-        venda = (id_venda, )
-        
-        with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
-            sql_filter_venda = file.read()
+        try:
+            venda = (id_venda, )
             
-        connection = con.Connection(Loja_database().database_loja)
-        cursor = connection.cursor()
-        cursor.execute(sql_filter_venda, venda)
-        venda_filted = cursor.fetchall()
-        cursor.close()
-        
-        for item in venda_filted:
-            json_venda = {
-                "id_venda": item[0],
-                "id_cliente": item[1],
-                "id_produto": item[2],
-                "nome_cliente": item[3],
-                "contato_cliente": item[4],
-                "nome_produto": item[5],
-                "categoria_produto": item[6],
-                "quantidade_venda": item[7],
-                "preco_produto": item[8],
-                "valor_venda": item[9],
-                "data_venda": item[10],
-                "status_venda": item[11]
-            }
+            with open('app/sql/venda_sql/filter_venda.sql', 'r') as file:
+                sql_filter_venda = file.read()
+                
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_venda, venda)
+            venda_filted = cursor.fetchall()
+            cursor.close()
             
-        return json_venda
+            if not venda_filted:
+                return {'status': False, 'message_error': f"Não existe produto com esse id: {id_venda}"}
+            
+            for item in venda_filted:
+                json_venda = {
+                    "id_venda": item[0],
+                    "id_cliente": item[1],
+                    "id_produto": item[2],
+                    "nome_cliente": item[3],
+                    "contato_cliente": item[4],
+                    "nome_produto": item[5],
+                    "categoria_produto": item[6],
+                    "quantidade_venda": item[7],
+                    "preco_produto": item[8],
+                    "valor_venda": item[9],
+                    "data_venda": item[10],
+                    "status_venda": item[11]
+                }
+                
+            return {'status': True, 'content': json_venda}
+        
+
+        except (Exception or con.error) as e:
+            return{'status': False, 'message_error': str(e)}
     
     def filter_date_vendas(date_venda: str):
         venda = (date_venda, )
@@ -134,58 +147,61 @@ class Service_venda:
         return venda_date_filted
     
     def delete_venda(id_venda: int):
-        
-        venda = (id_venda, )
-        
-        with open('app/sql/venda_sql/delete_venda.sql', 'r') as file:
-            sql_delete_venda = file.read()
-        
         try:
-            if Service_venda._exists_vendas(id_venda):
+            venda_exists = Service_venda._exists_vendas(id_venda)
+            venda_status_cancel = ('cancelado pelo intermediador', 'prazo de pagamento expirado', 'cancelada pelo cliente', 'processando' ,'cancelada')
+            if venda_exists['status'] and venda_exists['content'] in venda_status_cancel:
+                venda = (id_venda, )
+                
+                with open('app/sql/venda_sql/delete_venda.sql', 'r') as file:
+                    sql_delete_venda = file.read()
+                
                 connection = con.Connection(Loja_database().database_loja)
                 cursor = connection.cursor()
                 cursor.execute(sql_delete_venda, venda)
                 connection.commit()
                 cursor.close()
-                return f'Venda com id {id_venda} excluída'
+                return {'status': True, 'message': f'Venda com id {id_venda} excluída'}
             else:
-                return f'Venda com id {id_venda} não existe'
-            
-        except con.Error:
-            return 'error in query' 
+                return {'status': False, 'message_error': f'Venda com id {id_venda} não existe'}
+        
+        except (Exception or con.Error) as e:
+            return {'status': False, 'message_error': str(e)} 
 
     def cancel_venda(id_venda: int):
         
-        venda = (id_venda, )
-        
-        with open('app/sql/venda_sql/cancel_venda.sql', 'r') as file:
-            sql_cancel_venda = file.read()
-        
         try:
-            if Service_venda._exists_vendas(id_venda):
-                connection = con.Connection(Loja_database().database_loja)
-                cursor = connection.cursor()
-                cursor.execute(sql_cancel_venda, venda)
-                connection.commit()
-                cursor.close()
-                return f'Venda com id {id_venda} cancelada'
-            else:
-                return f'Venda com id {id_venda} não existe'
+            venda_exists = Service_venda._exists_vendas(id_venda)
+            venda = (id_venda, )
             
-        except con.Error:
-            return 'error in query'    
+            with open('app/sql/venda_sql/cancel_venda.sql', 'r') as file:
+                sql_cancel_venda = file.read()
+
+            if not venda_exists['status']:
+                return {'status': False, 'message_error': f'Venda com id {id_venda} não existe'}
+            
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_cancel_venda, venda)
+            connection.commit()
+            cursor.close()
+            
+            return {'status': True, 'message_error': f'Venda com id {id_venda} cancelada'}
+
+        except (Exception or con.Error) as e:
+            return {'status': False, 'message_error': str(e)}   
         
     
     def sale_venda(data: dict):# realiza a venda
         
-        produto_validated = Service_produto._produto_status(data['id_produto'])# retorna o status do produto se existir
-        cliente_validated = Service_cliente._cliente_status(data['id_cliente'])# retorna o status do cliente se existir
+        produto_validated = Service_produto._exists_produto(data['id_produto'])# retorna o status do produto se existir
+        cliente_validated = Service_cliente._exists_cliente(data['id_cliente'])# retorna o status do cliente se existir
         
-        exists_produto_venda: bool = (produto_validated['result']  and cliente_validated['result']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
+        exists_produto_venda: bool = (produto_validated['status']  and cliente_validated['status']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
         
         if exists_produto_venda :
             # se ambos existirem avança para a proxima condicional que verificar se os ststus estão aptos para a venda
-            if (produto_validated["status_produto"] == 'ativo') and (cliente_validated['status_cliente'] == 'ativo'):
+            if (produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo'):
                 
                 data['status_venda'] = 1
                 values_Venda = tuple(data.values())
@@ -202,13 +218,13 @@ class Service_venda:
                 return {"status": True, "message": "Venda concluída com sucesso"}
 
             else:
-                for key, values in {"Produto":  produto_validated["status_produto"], "Cliente": cliente_validated['status_cliente']}.items():
+                for key, values in {"Produto":  produto_validated["content"], "Cliente": cliente_validated['content']}.items():
                     if not values  == 'ativo':
                         return {"status": False, "message": f"o {key} não é válido para realizar venda.",
                                 "status_elemento": f"{values}"}
         else:
             if not exists_produto_venda:
-                for key, values in {"Produto": produto_validated['result'], "Cliente": cliente_validated['result']}.items():
+                for key, values in {"Produto": produto_validated['status'], "Cliente": cliente_validated['status']}.items():
                     if not values:
                         return {"status": False, "message": f"o {key} não existe para realizar venda"}
             

@@ -7,7 +7,7 @@ class Service_produto:
     def _exists_produto(id_produto: int):# verifica a existencia do produto
         produto = (id_produto, )
         
-        with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
+        with open('app/sql/produto_sql/status_produto.sql', 'r') as file:
             sql_filter_produto = file.read()
         try:
             connection = con.Connection(Loja_database().database_loja)
@@ -17,24 +17,15 @@ class Service_produto:
             cursor.close()
             
             if produto_filted:
-                return True
+                return {'status': True, 'content': produto_filted}
             
             else:
-                return False
+                return {'status': False}
             
         except con.Error as e:
-            return False
+            return {'status': False}
             
             
-    def _produto_status(id_produto: int):# retorna o status se o produto existir
-        
-        if Service_produto._exists_produto(id_produto):
-            produto = Service_produto.filter_produto(id_produto)
-            return {'result': True, 'status_produto': produto['content']}
-        else:
-            return {'result': False}
-        
-        
     def insert_produto(data: dict): # insere produto no banco de dados
         try:
             data['status_produto'] = 1 # adciona o status automáticamente como 1: ativo
@@ -121,14 +112,14 @@ class Service_produto:
     def delete_produto(id_produto: int):
         try:
 
-            status_produto = Service_produto._produto_status(id_produto)
+            status_produto = Service_produto._exists_produto(id_produto)
             produto_del = ('ativo', 'inativo')
             produto = (id_produto, )
             
             with open('app/sql/produto_sql/delete_produto.sql', 'r') as file:
                 sql_delete_produto = file.read()
 
-                if status_produto['result'] and status_produto['status_produto'] in produto_del:
+                if status_produto['status'] and status_produto['content'] in produto_del:
                     
                     connection = con.Connection(Loja_database().database_loja)
                     cursor = connection.cursor()
@@ -138,10 +129,10 @@ class Service_produto:
                     return {'status': True, 'message': f"produto com id {id_produto} excluído"}
                 
                 else:
-                    if not status_produto['result']:
+                    if not status_produto['status']:
                         return {'status': False, 'message_error': f"produto com id {id_produto} não existe"}
                     
-                    elif not status_produto['status_produto'] in produto_del:
+                    elif not status_produto['content'] in produto_del:
                         return {'status': False, 'message_error': f"produto com id {id_produto} não é valido para excluir"}
 
         except (Exception or con.Error) as e:
@@ -149,9 +140,9 @@ class Service_produto:
         
     def desactivate_produto(id_produto: int):
         try:
-            status_produto = Service_produto._produto_status(id_produto)
+            status_produto = Service_produto._exists_produto(id_produto)
             
-            if status_produto['result'] and status_produto['status_produto'] == 'ativo':
+            if status_produto['status'] and status_produto['content'] == 'ativo':
                 produto = (id_produto, )
                 
                 with open('app/sql/produto_sql/desactivate_produto.sql', 'r') as file:
