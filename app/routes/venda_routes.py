@@ -12,16 +12,19 @@ def register_venda_routes(app: Flask):
 
             json_venda = request.get_json()
             
-            if json_venda:
-            
-                if Validator.venda_json(json_venda):
-                    venda = Service_venda.insert_venda(json_venda)
-                    
-                    return jsonify({'message': "venda cadastrada"}), 201
-                else:
-                    return  jsonify({'message': "venda não cadastrada"}), 402
-            else:
+            if not json_venda:
                 return jsonify({"error": "json não identificado"}), 400
+            
+            if not Validator.venda_json(json_venda):
+                return  jsonify({'message': "venda não cadastrada"}), 402
+
+            venda = Service_venda.insert_venda(json_venda)
+            if venda['status']:
+                return jsonify({'message': venda['message']}), 201
+            else:
+                return jsonify({'_error': venda['message_error']}), 400
+                
+
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
@@ -46,11 +49,14 @@ def register_venda_routes(app: Flask):
     def filtro_venda():
         try:
             id_venda = request.args.get("id_venda")
-            if id_venda:
-                venda = Service_venda.filter_vendas(id_venda)
-                return jsonify({"mensage": Service_venda.filter_vendas(id_venda)})
-            else:
+            
+            if not id_venda:
                 return jsonify({"error": "argumentos não identificados"}), 400
+            
+            venda = Service_venda.filter_vendas(id_venda)
+            return jsonify({"mensage": Service_venda.filter_vendas(id_venda)})
+
+                
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     

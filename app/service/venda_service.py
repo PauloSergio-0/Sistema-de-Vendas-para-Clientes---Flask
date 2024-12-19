@@ -116,40 +116,50 @@ class Service_venda:
             return{'status': False, 'message_error': str(e)}
     
     def filter_date_vendas(date_venda: str):
-        venda = (date_venda, )
-        
-        with open('app/sql/venda_sql/filter_date_venda.sql', 'r') as file:
-            sql_filter_venda = file.read()
+        try:
+            venda = (date_venda, )
             
-        connection = con.Connection(Loja_database().database_loja)
-        cursor = connection.cursor()
-        cursor.execute(sql_filter_venda, venda)
-        venda_filted =cursor.fetchall()
-        cursor.close()
-        venda_date_filted = []
-        for item in venda_filted:
-            json_venda_date = {
-                "id_venda": item[0],
-                "id_cliente": item[1],
-                "id_produto": item[2],
-                "nome_cliente": item[3],
-                "contato_cliente": item[4],
-                "nome_produto": item[5],
-                "categoria_produto": item[6],
-                "quantidade_venda": item[7],
-                "preco_produto": item[8],
-                "valor_venda": item[9],
-                "data_venda": item[10],
-                "status_venda": item[11]
-            }
-            venda_date_filted.append(json_venda_date)
+            with open('app/sql/venda_sql/filter_date_venda.sql', 'r') as file:
+                sql_filter_venda = file.read()
+                
+            connection = con.Connection(Loja_database().database_loja)
+            cursor = connection.cursor()
+            cursor.execute(sql_filter_venda, venda)
+            venda_filted =cursor.fetchall()
+            cursor.close()
+            venda_date_filted = []
             
-        return venda_date_filted
+            if not venda_filted:
+                return {"status": False, 'message_error': f'Não existe venda nessa data: {date_venda}'}
+            
+            for item in venda_filted:
+                json_venda_date = {
+                    "id_venda": item[0],
+                    "id_cliente": item[1],
+                    "id_produto": item[2],
+                    "nome_cliente": item[3],
+                    "contato_cliente": item[4],
+                    "nome_produto": item[5],
+                    "categoria_produto": item[6],
+                    "quantidade_venda": item[7],
+                    "preco_produto": item[8],
+                    "valor_venda": item[9],
+                    "data_venda": item[10],
+                    "status_venda": item[11]
+                }
+                venda_date_filted.append(json_venda_date)
+                    
+                return {'status': True, 'content': venda_date_filted}
+            
+        except (Exception or con.Error) as e:
+            return {'status': False, 'message_error': str(e)}
     
     def delete_venda(id_venda: int):
+        
         try:
             venda_exists = Service_venda._exists_vendas(id_venda)
-            venda_status_cancel = ('cancelado pelo intermediador', 'prazo de pagamento expirado', 'cancelada pelo cliente', 'processando' ,'cancelada')
+            venda_status_cancel = ('cancelado pelo intermediador', 'prazo de pagamento expirado', 'cancelada pelo cliente','cancelada')
+
             if venda_exists['status'] and venda_exists['content'] in venda_status_cancel:
                 venda = (id_venda, )
                 
@@ -172,22 +182,29 @@ class Service_venda:
         
         try:
             venda_exists = Service_venda._exists_vendas(id_venda)
+            venda_status_cancel = ('excluida','cancelado pelo intermediador', 'cancelada pelo cliente', 'cancelada')
             venda = (id_venda, )
-            
+
             with open('app/sql/venda_sql/cancel_venda.sql', 'r') as file:
                 sql_cancel_venda = file.read()
 
-            if not venda_exists['status']:
-                return {'status': False, 'message_error': f'Venda com id {id_venda} não existe'}
-            
-            connection = con.Connection(Loja_database().database_loja)
-            cursor = connection.cursor()
-            cursor.execute(sql_cancel_venda, venda)
-            connection.commit()
-            cursor.close()
-            
-            return {'status': True, 'message_error': f'Venda com id {id_venda} cancelada'}
-
+            if  venda_exists['status'] and venda_exists['content'] in venda_status_cancel:
+                connection = con.Connection(Loja_database().database_loja)
+                cursor = connection.cursor()
+                cursor.execute(sql_cancel_venda, venda)
+                connection.commit()
+                cursor.close()
+                
+                return {'status': True, 'message': f'Venda com id {id_venda} cancelada'}
+            else:
+                
+                if not venda_exists['status']:
+                    return {'status': False, 'message_error': f'Não existe venda con essa id: {id_venda}'}
+                
+                elif not venda_exists['content'] in venda_status_cancel:
+                    return {'status': False, 'message_error': f'Essa venda Não pode ser cancelada'}
+                    
+                
         except (Exception or con.Error) as e:
             return {'status': False, 'message_error': str(e)}   
         
