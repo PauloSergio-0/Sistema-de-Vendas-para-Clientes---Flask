@@ -7,7 +7,7 @@ from decorators.jwt_required import jwt_required
 def register_clientes_routes(app: Flask):
     
     @app.route('/cadastro/cliente', methods = ['POST'])
-    @jwt_required   
+    # @jwt_required   
     def cadastrar_clientes():
         """
             _summary_
@@ -38,8 +38,6 @@ def register_clientes_routes(app: Flask):
 
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
-            
-    
 
     @app.route('/listar/cliente', methods = ['GET'])
     def listar_cliente():
@@ -48,7 +46,7 @@ def register_clientes_routes(app: Flask):
             
             Retorna  ativos, inativos e excluidos.
         """
-
+        
         lista_cliente = Service_cliente.list_cliente()
         if lista_cliente['status']:
             return jsonify({"cliente": lista_cliente['content']}), 200
@@ -64,6 +62,7 @@ def register_clientes_routes(app: Flask):
             Retorno o cliente de acordo com a id selecionada.
         """
         try:
+            
             id_cliente = request.args.get('id_cliente')
             
             if not id_cliente:
@@ -71,34 +70,38 @@ def register_clientes_routes(app: Flask):
             
             cliente = Service_cliente.filter_cliente(id_cliente)
             if cliente['status']:
-                return jsonify({"message": cliente['content']})
+                return jsonify({"message": cliente['content']}),200
             else:
-                return jsonify({"message": cliente['content']})
+                return jsonify({"error": cliente['message_error']}),400
             
         except Exception as e:
             return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
-    @app.route("/delete/cliente", methods = ['GET'])
+    @app.route("/delete/cliente", methods = ['PATCH'])
     def delete_cliente():
         
-        """s\\\\\\\\\\\\\\\\\\\\\\\\
-            Rota para deletar de forma lógica um cliente pelo seu id
-
-        
+        """
+        Rota para deletar de forma lógica um cliente pelo seu id
             Retorna a mensagem de cofirmação de cliente excluido 
         """
         try:
-            id_cliente = request.args.get("id_cliente")
-            if id_cliente:
-                return jsonify({"message": Service_cliente.delete_cliente(id_cliente)}),201
+            (id_cliente) = request.args.get("id_cliente")
+            if  not id_cliente:
+                
+                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+            
+            cliente = Service_cliente.delete_cliente(int(id_cliente))
+            if cliente['status']:
+                return jsonify({"message": cliente['message']}),201
             
             else:
-                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+                return jsonify({"error": cliente['message_error']}), 400
+                
             
         except Exception as e:
             return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
         
-    @app.route("/desactivate/cliente", methods = ['GET'])
+    @app.route("/desactivate/cliente", methods = ['PUT'])
     def desativar_cliente():
         """
             Rota para desativatr de forma lógica um cliente pelo seu id
@@ -110,11 +113,15 @@ def register_clientes_routes(app: Flask):
 
             id_cliente = request.args.get("id_cliente")
 
-            if id_cliente:
-                return jsonify({"message": Service_cliente.desactivate_cliente(id_cliente)})
+            if not id_cliente:
+                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+            
+            cliente = Service_cliente.desactivate_cliente(int(id_cliente))
+            if cliente['status']:
+                return jsonify({"message": cliente['message']}), 201
             
             else:
-                return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
+                return jsonify({"error": cliente['message_error']}), 400
 
         except Exception as e:
             return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400

@@ -13,11 +13,11 @@ class Service_produto:
             connection = con.Connection(Loja_database().database_loja)
             cursor = connection.cursor()
             cursor.execute(sql_filter_produto, produto)
-            produto_filted = cursor.fetchall()
+            produto_filted = cursor.fetchall()[0]
             cursor.close()
             
             if produto_filted:
-                return {'status': True, 'content': produto_filted}
+                return {'status': True, 'content': produto_filted[0]}
             
             else:
                 return {'status': False}

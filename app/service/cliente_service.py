@@ -14,10 +14,10 @@ class Service_cliente:
             connection = con.Connection(Loja_database().database_loja)
             cursor = connection.cursor()
             cursor.execute(sql_filter_cliente, value)
-            cliente = cursor.fetchall()
+            cliente = cursor.fetchall()[0]
             cursor.close()
             if cliente:
-                return {'status': True, 'content': cliente}
+                return {'status': True, 'content': cliente[0]}
             else:
                 return {'status': False}
         except:
@@ -90,6 +90,10 @@ class Service_cliente:
     def filter_cliente(id_cliente: int): # filtra pelo id 
         
         try:
+            id_cliente = int(id_cliente)
+            if not isinstance(id_cliente, int):
+                return{"status": False, "message_error" : f'Tipo não aceito: {type(id_cliente)}'}
+            
             value = (id_cliente,)
             
             with open('app/sql/cliente_sql/filter_cliente.sql', 'r') as file:
@@ -119,12 +123,12 @@ class Service_cliente:
             return {"status": False, "message_error" : str(e)}
 
 
-    def delete_cliente( id_cliente: str):# deleta logicamente
+    def delete_cliente(id_cliente: int):# deleta logicamente
 
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
             
-            # status_cliente =  Service_cliente._cliente_status(id_cliente)['status_cliente']
+
             valid_status_del = ('ativo', 'inativo')
 
             if cliente_valitaded['status'] and cliente_valitaded['content'] in valid_status_del:
@@ -146,15 +150,14 @@ class Service_cliente:
                     return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
 
                 elif not cliente_valitaded['content'] in valid_status_del:
-                    return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
+                    return {"status": False, "message_error": f'Status não autorizado para exclusão'}
 
         except (Exception or con.Error) as e:
-                return {"status": False, "message_error": f"Error in database query: {str(e)}"}
+                return {"status": False, "message_error": {str(e)}}
 
     def desactivate_cliente( id_cliente: str):# desativa logicamente
         try:
             cliente_valitaded = Service_cliente._exists_cliente(id_cliente)
-            # status_cliente = Service_cliente._cliente_status(id_cliente)['status_cliente']
 
             if cliente_valitaded['status'] and cliente_valitaded['content'] == 'ativo':
                 cliente = (id_cliente, )
@@ -171,7 +174,11 @@ class Service_cliente:
                 return {"status": True, "message": f"O cliente {id_cliente} foi desativado"}
 
             else:
-                return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
+                if not cliente_valitaded['status']:
+                    return {"status": False, "message_error": f'Não existe cliente com esse id: {id_cliente}'}
+                
+                elif not cliente_valitaded['content'] == 'ativo':
+                    return {"status": False, "message_error": f'Status não autorizado para desativação.'}
 
         except (Exception or con.Error) as e:
                 return {"status": False, "message_error": str(e)}

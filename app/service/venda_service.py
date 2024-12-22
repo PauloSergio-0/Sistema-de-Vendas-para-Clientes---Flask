@@ -16,10 +16,10 @@ class Service_venda:
             connection = con.Connection(Loja_database().database_loja)
             cursor = connection.cursor()
             cursor.execute(sql_filter_venda, venda)
-            venda_filted = cursor.fetchall()
+            venda_filted = cursor.fetchall()[0]
             cursor.close()
             if venda_filted:
-                return {'status': True, 'content': venda_filted}
+                return {'status': True, 'content': venda_filted[0]}
             else: 
                 return {'status': False}
         except:
@@ -216,9 +216,8 @@ class Service_venda:
         
         exists_produto_venda: bool = (produto_validated['status']  and cliente_validated['status']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
         
-        if exists_produto_venda :
+        if exists_produto_venda and ((produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo')):
             # se ambos existirem avança para a proxima condicional que verificar se os ststus estão aptos para a venda
-            if (produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo'):
                 
                 data['status_venda'] = 1
                 values_Venda = tuple(data.values())
@@ -234,14 +233,16 @@ class Service_venda:
             
                 return {"status": True, "message": "Venda concluída com sucesso"}
 
-            else:
-                for key, values in {"Produto":  produto_validated["content"], "Cliente": cliente_validated['content']}.items():
-                    if not values  == 'ativo':
-                        return {"status": False, "message": f"o {key} não é válido para realizar venda.",
-                                "status_elemento": f"{values}"}
         else:
+            
             if not exists_produto_venda:
                 for key, values in {"Produto": produto_validated['status'], "Cliente": cliente_validated['status']}.items():
                     if not values:
                         return {"status": False, "message": f"o {key} não existe para realizar venda"}
-            
+                    
+            elif not (produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo'):    
+                for key, values in {"Produto":  produto_validated["content"], "Cliente": cliente_validated['content']}.items():
+                    if not values  == 'ativo':
+                        return {"status": False, "message": f"o {key} não é válido para realizar venda.",
+                                "status_elemento": f"{values}"}
+                
