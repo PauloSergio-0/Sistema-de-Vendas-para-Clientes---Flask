@@ -9,7 +9,9 @@ def register_produto_routes(app:Flask):
     @jwt_required
     def insert_produto():
         try:
-            json_produto = request.get_json()            
+            
+            json_produto = request.get_json()  
+            
             if not json_produto:
                 return jsonify({"error": "JSON não recebido"}),400
             
@@ -41,16 +43,16 @@ def register_produto_routes(app:Flask):
             if not id_produto:
                     return jsonify({"error": "JSON não recebido"}),400
 
-            produto = Service_produto.filter_produto(id_produto)
+            produto = Service_produto.filter_produto(int(id_produto))
             if produto['status']:
-                return jsonify({'message': produto['message']}), 200
+                return jsonify({'message': produto['content']}), 200
             else:            
                 return jsonify({'error': f"error no serviço: {produto['message_error']}"}), 400
 
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
-    @app.route('/delete/produto', methods = ['GET'])
+    @app.route('/delete/produto', methods = ['PATCH'])
     def exlcluir_produto():
         
         try:
@@ -58,7 +60,7 @@ def register_produto_routes(app:Flask):
             if not id_produto:
                     return jsonify({"error": "Parametro não recebido"}), 400
                 
-            produto = Service_produto.delete_produto(id_produto)
+            produto = Service_produto.delete_produto(int(id_produto))
             if produto['status']:
                 return jsonify({"messsage": produto['message']}), 201
             else:
@@ -68,7 +70,7 @@ def register_produto_routes(app:Flask):
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
 
 
-    @app.route('/desactivate/produto', methods = ['GET'])
+    @app.route('/desactivate/produto', methods = ['PUT'])
     def desativar_produto():
         
         try:
@@ -78,7 +80,7 @@ def register_produto_routes(app:Flask):
             if not id_produto:
                 return jsonify({"error": "JSON não recebido"}), 400
             
-            produto = Service_produto.desactivate_produto(id_produto)
+            produto = Service_produto.desactivate_produto(int(id_produto))
             if produto['status']:
                 return jsonify({'message': produto['message']}), 201
             

@@ -78,6 +78,12 @@ class Service_produto:
     def filter_produto(id_produto: int):
         
         try:
+            
+            id_produto = int(id_produto)
+            
+            if not isinstance(id_produto, int):
+                return{"status": False, "message_error" : f'Tipo não aceito: {type(id_cliente)}'}
+            
             produto = (id_produto, )
             
             with open('app/sql/produto_sql/filter_produto.sql', 'r') as file:
@@ -111,7 +117,7 @@ class Service_produto:
     
     def delete_produto(id_produto: int):
         try:
-
+            
             status_produto = Service_produto._exists_produto(id_produto)
             produto_del = ('ativo', 'inativo')
             produto = (id_produto, )
@@ -157,10 +163,10 @@ class Service_produto:
                 return {'status': True, 'message': f"produto com id {id_produto} desativado"}
             
             else:
-                if not status_produto['result']:
+                if not status_produto['status']:
                     return {'status': False, 'message_error': f"produto com id {id_produto} não existe"}
                 
-                elif not status_produto['status_produto'] == 'ativo':
+                elif not status_produto['content'] == 'ativo':
                         return {'status': False, 'message_error': f"produto com id {id_produto} não é valido para inativar"}
                     
         except (Exception or con.Error) as e:

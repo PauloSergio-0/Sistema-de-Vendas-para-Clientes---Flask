@@ -6,7 +6,7 @@ from utils.json_validator import Validator
 def register_venda_routes(app: Flask):
     
     @app.route("/cadastro/venda", methods=["POST"])
-    @jwt_required
+    # @jwt_required
     def insert_venda():
         try:
 
@@ -15,14 +15,15 @@ def register_venda_routes(app: Flask):
             if not json_venda:
                 return jsonify({"error": "json não identificado"}), 400
             
-            if not Validator.venda_json(json_venda):
-                return  jsonify({'message': "venda não cadastrada"}), 402
+            venda_valited = Validator.venda_json(json_venda)
+            if not venda_valited['status']:
+                return  jsonify({'message': venda_valited['message_error']}), 400
 
-            venda = Service_venda.insert_venda(json_venda)
+            venda = Service_venda.sale_venda(json_venda)
             if venda['status']:
                 return jsonify({'message': venda['message']}), 201
             else:
-                return jsonify({'_error': venda['message_error']}), 400
+                return jsonify({'error': venda['message_error']}), 400
                 
 
         except Exception as e:
@@ -53,8 +54,12 @@ def register_venda_routes(app: Flask):
             if not id_venda:
                 return jsonify({"error": "argumentos não identificados"}), 400
             
-            venda = Service_venda.filter_vendas(id_venda)
-            return jsonify({"mensage": Service_venda.filter_vendas(id_venda)})
+            venda = Service_venda.filter_vendas(int(id_venda))
+            if venda['status']:
+                return jsonify({"mensage": venda['content']}), 200
+            else:
+                return jsonify({"error": venda['message_error']}), 400
+                
 
                 
         except Exception as e:
@@ -64,38 +69,53 @@ def register_venda_routes(app: Flask):
     def filtro_venda_data():
         try:
             data_venda: str = request.args.get("data_venda")
-            if data_venda:
-                return jsonify({"mensage": Service_venda.filter_date_vendas(data_venda)})
+            if not data_venda:
+                return jsonify({"error": "argumentos não identificados"}), 400
+            
+            venda = Service_venda.filter_date_venda(str(data_venda))
+            if venda['status']:
+                return jsonify({"mensage": venda['content']}), 200
             else:
-                return jsonify({"error": "argumentos não identificados"})
+                return jsonify({"error": venda['message_error']}), 400
+            
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
-    @app.route('/delete/venda', methods = ['POST'])
+    @app.route('/delete/venda', methods = ['PATCH'])
     def exluir_venda():
         
         try:
             
             id_venda = request.args.get("id_venda")
             
-            if id_venda:
-                
-                return jsonify({"message": Service_venda.delete_venda(id_venda)})
-            
-            else:
+            if not id_venda:
                 return jsonify({"error": "argumentos não identificados"})
+            
+            venda = Service_venda.delete_venda(int(id_venda))
+            if venda['status']:
+                return jsonify({"message": venda['message']}), 200
+            else:
+                return jsonify({"error": venda['message_error']}), 400
+            
+
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
-    @app.route('/cancel/venda', methods = ['POST'])
+    @app.route('/cancel/venda', methods = ['PUT'])
     def cancelar_venda():
         
         try:
             id_venda: int = request.args.get("id_venda")
-            if id_venda:
-                return jsonify({"message": Service_venda.cancel_venda(id_venda)})
-            else:
+            if not id_venda:
                 return jsonify({"error": "argumentos não identificados"})
+            
+            venda = Service_venda.cancel_venda(int(id_venda))
+            if venda['status']:
+                return jsonify({"message": venda['message']}), 200
+            else:
+                return jsonify({"error": venda['message_error']}), 400
+                
+
         except Exception as e:
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
             

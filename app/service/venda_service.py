@@ -115,7 +115,7 @@ class Service_venda:
         except (Exception or con.error) as e:
             return{'status': False, 'message_error': str(e)}
     
-    def filter_date_vendas(date_venda: str):
+    def filter_date_venda(date_venda: str):
         try:
             venda = (date_venda, )
             
@@ -160,7 +160,7 @@ class Service_venda:
             venda_exists = Service_venda._exists_vendas(id_venda)
             venda_status_cancel = ('cancelado pelo intermediador', 'prazo de pagamento expirado', 'cancelada pelo cliente','cancelada')
 
-            if venda_exists['status'] and venda_exists['content'] in venda_status_cancel:
+            if venda_exists['status'] and not venda_exists['content'] == 'excluida':
                 venda = (id_venda, )
                 
                 with open('app/sql/venda_sql/delete_venda.sql', 'r') as file:
@@ -173,7 +173,10 @@ class Service_venda:
                 cursor.close()
                 return {'status': True, 'message': f'Venda com id {id_venda} excluída'}
             else:
-                return {'status': False, 'message_error': f'Venda com id {id_venda} não existe'}
+                if not venda_exists['status']:
+                    return {'status': False, 'message_error': f'Venda com id {id_venda} não existe'}
+                elif venda_exists['content'] in 'excluida':
+                    return {'status': False, 'message_error': f'Venda com id {id_venda} não compativel para deletar'}
         
         except (Exception or con.Error) as e:
             return {'status': False, 'message_error': str(e)} 
@@ -188,7 +191,7 @@ class Service_venda:
             with open('app/sql/venda_sql/cancel_venda.sql', 'r') as file:
                 sql_cancel_venda = file.read()
 
-            if  venda_exists['status'] and venda_exists['content'] in venda_status_cancel:
+            if  venda_exists['status'] and not venda_exists['content'] in venda_status_cancel:
                 connection = con.Connection(Loja_database().database_loja)
                 cursor = connection.cursor()
                 cursor.execute(sql_cancel_venda, venda)
@@ -201,7 +204,7 @@ class Service_venda:
                 if not venda_exists['status']:
                     return {'status': False, 'message_error': f'Não existe venda con essa id: {id_venda}'}
                 
-                elif not venda_exists['content'] in venda_status_cancel:
+                elif venda_exists['content'] in venda_status_cancel:
                     return {'status': False, 'message_error': f'Essa venda Não pode ser cancelada'}
                     
                 
@@ -238,11 +241,11 @@ class Service_venda:
             if not exists_produto_venda:
                 for key, values in {"Produto": produto_validated['status'], "Cliente": cliente_validated['status']}.items():
                     if not values:
-                        return {"status": False, "message": f"o {key} não existe para realizar venda"}
+                        return {"status": False, "message_error": f"o {key} não existe para realizar venda"}
                     
             elif not (produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo'):    
                 for key, values in {"Produto":  produto_validated["content"], "Cliente": cliente_validated['content']}.items():
                     if not values  == 'ativo':
-                        return {"status": False, "message": f"o {key} não é válido para realizar venda.",
+                        return {"status": False, "message_error": f"o {key} não é válido para realizar venda.",
                                 "status_elemento": f"{values}"}
                 

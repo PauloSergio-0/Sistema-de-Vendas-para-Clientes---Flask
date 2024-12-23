@@ -7,7 +7,7 @@ from decorators.jwt_required import jwt_required
 def register_clientes_routes(app: Flask):
     
     @app.route('/cadastro/cliente', methods = ['POST'])
-    # @jwt_required   
+    @jwt_required   
     def cadastrar_clientes():
         """
             _summary_
@@ -68,7 +68,7 @@ def register_clientes_routes(app: Flask):
             if not id_cliente:
                 return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
             
-            cliente = Service_cliente.filter_cliente(id_cliente)
+            cliente = Service_cliente.filter_cliente(int(id_cliente))
             if cliente['status']:
                 return jsonify({"message": cliente['content']}),200
             else:
