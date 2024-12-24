@@ -76,7 +76,7 @@ class Validator:
         keys_json_venda = {"id_cliente", "id_produto", "qtd", "data"}
         
         keys_INT_json_venda = {"id_cliente", "id_produto", "qtd"}
-
+        
         for keys, values in json.items():
 
             if keys not in keys_json_venda:

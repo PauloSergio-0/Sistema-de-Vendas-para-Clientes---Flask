@@ -25,24 +25,6 @@ class Service_venda:
         except:
             return {'status': False}
     
-    def insert_venda(data: dict):
-        try:
-            data['status_venda'] = 1
-            values_Venda = tuple(data.values())
-            
-            with open('app/sql/venda_sql/insert_into_venda.sql', 'r') as file:
-                sql_insert_venda = file.read()
-                
-            connection = con.Connection(Loja_database().database_loja)
-            cursor = connection.cursor()
-            cursor.execute(sql_insert_venda, values_Venda)
-            connection.commit()
-            cursor.close()
-            
-            return {'status': True, 'message': 'venda cadastrada'}
-        except (Exception or con.Error) as e:
-            return {'status': False, 'message_error': str(e)}
-        
     def list_venda():
         
         try:
@@ -212,16 +194,21 @@ class Service_venda:
             return {'status': False, 'message_error': str(e)}   
         
     
-    def sale_venda(data: dict):# realiza a venda
+    def insert_venda(data: dict):# realiza a venda
+        
         
         produto_validated = Service_produto._exists_produto(data['id_produto'])# retorna o status do produto se existir
         cliente_validated = Service_cliente._exists_cliente(data['id_cliente'])# retorna o status do cliente se existir
         
-        exists_produto_venda: bool = (produto_validated['status']  and cliente_validated['status']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
+        exists_produto_venda: bool = (produto_validated['status'] and cliente_validated['status']) # variavel apenas com valor que retorna a existencia ou não do produto e venda
         
-        if exists_produto_venda and ((produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo')):
+        print(exists_produto_venda)
+        print(produto_validated["content"])
+        print(cliente_validated['content'])
+        
+        if exists_produto_venda and (produto_validated["content"] == 'ativo' and cliente_validated['content'] == 'ativo'):
             # se ambos existirem avança para a proxima condicional que verificar se os ststus estão aptos para a venda
-                
+
                 data['status_venda'] = 1
                 values_Venda = tuple(data.values())
                 
@@ -243,7 +230,7 @@ class Service_venda:
                     if not values:
                         return {"status": False, "message_error": f"o {key} não existe para realizar venda"}
                     
-            elif not (produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo'):    
+            elif not ((produto_validated["content"] == 'ativo') and (cliente_validated['content'] == 'ativo')):    
                 for key, values in {"Produto":  produto_validated["content"], "Cliente": cliente_validated['content']}.items():
                     if not values  == 'ativo':
                         return {"status": False, "message_error": f"o {key} não é válido para realizar venda.",
