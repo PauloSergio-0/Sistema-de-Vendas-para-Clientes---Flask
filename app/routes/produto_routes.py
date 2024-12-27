@@ -31,8 +31,18 @@ def register_produto_routes(app:Flask):
             
     @app.route("/listar/produto", methods = ['GET'])
     def listar_produto():
-        
-        return jsonify({"message": Service_produto.list_produto()}),200
+        try:
+            
+            produto =  Service_produto.list_produto()
+            
+            if produto['status']:
+                return jsonify({"message": produto['content']}), 200
+            else:
+                return jsonify({"error": produto['message_error']}), 400
+            
+        except Exception as e:
+                return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
+            
 
     @app.route('/filtro/produto', methods = ['GET'])
     def filtro_produto():

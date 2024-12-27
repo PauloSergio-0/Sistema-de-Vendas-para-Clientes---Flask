@@ -1,2 +1,2 @@
-# Sistema-de-Vendas-para-Clientes---FlaskI-
+# Sistema de vendas para Clientes
 
