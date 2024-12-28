@@ -6,10 +6,10 @@ from flask import jsonify
 from datetime import date
 import json
 class Service_venda:
-    
+
     def _exists_vendas(id_venda: int):# verifica a existência da venad
         venda = (id_venda, )
-        
+
         with open('app/sql/venda_sql/status_venda.sql', 'r') as file:
             sql_filter_venda = file.read()
         try:    
@@ -24,20 +24,20 @@ class Service_venda:
                 return {'status': False}
         except:
             return {'status': False}
-    
+
     def list_venda():
-        
+
         try:
             with open('app/sql/venda_sql/list_venda.sql', 'r') as file:
                 sql_list_venda = file.read()
-            
+
             connection = con.Connection(Loja_database().database_loja)
             cursor = connection.cursor()
             cursor.execute(sql_list_venda)
             venda = cursor.fetchall()
-            lista_venda = []
-            for row in venda:
-                json_venda = {
+
+
+            lista_venda = [{
                     "id_venda": row[0],
                     "id_cliente": row[1],
                     "id_produto": row[2],
@@ -50,8 +50,8 @@ class Service_venda:
                     "valor_venda": row[9],
                     "data_venda": row[10],
                     "status_venda": row[11]
-                }
-                lista_venda.append(json_venda)
+                }for row in venda]
+
             cursor.close()  
 
             return {"status": True, "content":lista_venda}

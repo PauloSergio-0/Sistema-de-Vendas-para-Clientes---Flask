@@ -55,18 +55,17 @@ class Service_produto:
                 cursor = connection.cursor()
                 cursor.execute(sql_list_produto)
                 produto = cursor.fetchall()
-                lista_produto = []
-                
-                for row in produto:
-                    json_produto = {
+
+
+                lista_produto = [{
                         "id_produto": row[0],
                         "nome_produto": row[1],
                         "codigo_produto": row[2],
                         "categoria_produto": row[3],
                         "preco_produto": row[4],
                         "status_produto": row[5]
-                    }
-                    lista_produto.append(json_produto)
+                    } for row in produto]
+    
                 
                 cursor.close()
                 
@@ -96,21 +95,21 @@ class Service_produto:
             produto_filted = cursor.fetchall()
             cursor.close()
             
-            if produto_filted:
-                for item in produto_filted:
-                    json_produto = {
-                            "id_produto": item[0],
-                            "nome_produto": item[1],
-                            "codigo_produto": item[2],
-                            "categoria_produto": item[3],
-                            "preco_produto": item[4],
-                            "status_produto": item[5]
-                        }
-
-                return {'status': True, 'content': json_produto}
-
-            else:
+            if not  produto_filted:
                 return {'status': False, 'message_error': f"produto com id {id_produto} não existe"}
+            
+            for item in produto_filted:
+                json_produto = {
+                        "id_produto": item[0],
+                        "nome_produto": item[1],
+                        "codigo_produto": item[2],
+                        "categoria_produto": item[3],
+                        "preco_produto": item[4],
+                        "status_produto": item[5]
+                    }
+
+            return {'status': True, 'content': json_produto}
+
             
         except (Exception or con.Error) as e:
             return {'status': False, 'message_error': str(e)}

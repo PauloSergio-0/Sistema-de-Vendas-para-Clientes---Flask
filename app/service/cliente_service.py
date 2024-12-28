@@ -66,19 +66,14 @@ class Service_cliente:
             cursor.execute(sql_list_cliente)
             clientes = cursor.fetchall()
             
-            lista_clientes = []
-            
-            for row in clientes:
-                json_lista_cliente = {
+            lista_clientes = [{
                     "id_cliente": row[0],
                     "nome_cliente": row[1],
                     "endereco_cliente": row[2],
                     "contato_cliente": row[3],
                     "status_cliente": row[4]
-                }
-                
-                lista_clientes.append(json_lista_cliente)
-                
+                    } for row in clientes]
+
             cursor.close()
             
             return {'status': True, 'content': lista_clientes}
