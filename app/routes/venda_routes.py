@@ -131,14 +131,14 @@ def register_venda_routes(app: Flask):
             if not json_venda:
                 return jsonify({"error": "argumentos não identificado"}),400
             
-            validacao_json_vendas = Validator.venda_json(json_venda)
+            validacao_json_vendas = Validator.venda_SALE_json(json_venda)
             
             if not validacao_json_vendas['status']:
                 return jsonify({'message': validacao_json_vendas["message_error"]}), 400
 
             
 
-            transacao_venda = Service_venda.insert_venda(json_venda)
+            transacao_venda = Service_venda.sale_venda(json_venda)
             
             if  transacao_venda['status']:
                 return jsonify({'message': transacao_venda['message']}), 201

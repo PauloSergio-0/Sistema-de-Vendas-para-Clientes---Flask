@@ -96,3 +96,22 @@ class Validator:
 
         return {"status": True}
     
+    def venda_SALE_json(json: dict):
+
+        keys_json_venda = {"id_cliente", "id_produto", "qtd_venda"}
+        
+
+        
+        for keys, values in json.items():
+
+            if keys not in keys_json_venda:
+                return {"status": False, "message_error": f"A chave '{keys}' não é válida para o serviço."}
+
+            if type(values) == int and (values is None or values < 1) and keys in keys_json_venda:
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor vázio ou com número inválido."}
+
+            elif keys in keys_json_venda and type(values) == str:
+                return {"status": False, "message_error": f"A chave '{keys}' está com o valor do tipo {type(values)}."}
+
+        return {"status": True}
+    
