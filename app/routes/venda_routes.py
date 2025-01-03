@@ -6,7 +6,7 @@ from utils.json_validator import Validator
 def register_venda_routes(app: Flask):
     
     @app.route("/cadastro/venda", methods=["POST"])
-    # @jwt_required
+    @jwt_required
     def insert_venda():
         try:
 
@@ -93,7 +93,7 @@ def register_venda_routes(app: Flask):
             
             venda = Service_venda.delete_venda(int(id_venda))
             if venda['status']:
-                return jsonify({"message": venda['message']}), 200
+                return jsonify({"message": venda['message']}), 201
             else:
                 return jsonify({"error": venda['message_error']}), 400
             
@@ -111,7 +111,7 @@ def register_venda_routes(app: Flask):
             
             venda = Service_venda.cancel_venda(int(id_venda))
             if venda['status']:
-                return jsonify({"message": venda['message']}), 200
+                return jsonify({"message": venda['message']}), 201
             else:
                 return jsonify({"error": venda['message_error']}), 400
                 

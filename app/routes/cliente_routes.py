@@ -104,7 +104,7 @@ def register_clientes_routes(app: Flask):
     @app.route("/desactivate/cliente", methods = ['PUT'])
     def desativar_cliente():
         """
-            Rota para desativatr de forma lógica um cliente pelo seu id
+            Rota para desativatr de forma lógica desactivate um cliente pelo seu id
 
             RetRetorna a mensagem de cofirmação de cliente desativado
         """

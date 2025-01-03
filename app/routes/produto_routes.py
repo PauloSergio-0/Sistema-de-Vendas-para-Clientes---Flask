@@ -63,7 +63,7 @@ def register_produto_routes(app:Flask):
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
     @app.route('/delete/produto', methods = ['PATCH'])
-    def exlcluir_produto():
+    def excluir_produto():
         
         try:
             id_produto = request.args.get("id_produto")

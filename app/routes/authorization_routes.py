@@ -1,5 +1,6 @@
 from flask import jsonify, request, Flask
 from utils.auth_service import Jwt_service
+
 def register_routes_authorization(app: Flask):
     """
     Registra uma rota de teste para verificar o JWT 
