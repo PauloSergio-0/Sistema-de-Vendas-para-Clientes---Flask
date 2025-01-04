@@ -66,17 +66,18 @@ class Service_cliente:
             cursor.execute(sql_list_cliente)
             clientes = cursor.fetchall()
             
-            lista_clientes = [{
-                    "id_cliente": row[0],
-                    "nome_cliente": row[1],
-                    "endereco_cliente": row[2],
-                    "contato_cliente": row[3],
-                    "status_cliente": row[4]
-                    } for row in clientes]
-
             cursor.close()
             
-            return {'status': True, 'content': lista_clientes}
+            return {
+                    'status': True, 
+                    'content': [{
+                        "id_cliente": row[0],
+                        "nome_cliente": row[1],
+                        "endereco_cliente": row[2],
+                        "contato_cliente": row[3],
+                        "status_cliente": row[4]
+                        } for row in clientes]
+                    }
 
         except (Exception or con.Error) as e:
             return {'status': False, 'message_error': str(e)}
@@ -103,16 +104,17 @@ class Service_cliente:
             if not cliente:
                 return {"status": False, "message_error" : f'Não existe cliente com esse id: {id_cliente}'}
             
-            for item in cliente:
-                json_lista_cliente = {
+                
+                
+            return {
+                "status": True,
+                    "content" :[{
                     "id_cliente": item[0],
                     "nome_cliente": item[1],
                     "endereco_cliente": item[2],
                     "contato_cliente": item[3],
                     "status_cliente": item[4]
-                }
-                
-            return {"status": True, "content" :json_lista_cliente}
+                }for item in cliente]}
 
         except (Exception or con.Error) as e:
             return {"status": False, "message_error" : str(e)}

@@ -35,8 +35,10 @@ class Service_venda:
             cursor.execute(sql_list_venda)
             venda = cursor.fetchall()
 
+            cursor.close()  
 
-            lista_venda = [{
+            return {"status": True,
+                    "content":[{
                     "id_venda": row[0],
                     "id_cliente": row[1],
                     "id_produto": row[2],
@@ -49,11 +51,7 @@ class Service_venda:
                     "valor_venda": row[9],
                     "data_venda": row[10],
                     "status_venda": row[11]
-                }for row in venda]
-
-            cursor.close()  
-
-            return {"status": True, "content":lista_venda}
+                }for row in venda]}
         
         except (Exception or con.Error) as e:
             return {"status": False, "message_error": str(e)}
@@ -74,23 +72,25 @@ class Service_venda:
             if not venda_filted:
                 return {'status': False, 'message_error': f"Não existe produto com esse id: {id_venda}"}
             
-            for item in venda_filted:
-                json_venda = {
-                    "id_venda": item[0],
-                    "id_cliente": item[1],
-                    "id_produto": item[2],
-                    "nome_cliente": item[3],
-                    "contato_cliente": item[4],
-                    "nome_produto": item[5],
-                    "categoria_produto": item[6],
-                    "quantidade_venda": item[7],
-                    "preco_produto": item[8],
-                    "valor_venda": item[9],
-                    "data_venda": item[10],
-                    "status_venda": item[11]
-                }
+            
                 
-            return {'status': True, 'content': json_venda}
+                
+            return {
+                    'status': True,
+                    'content': [{
+                        "id_venda": item[0],
+                        "id_cliente": item[1],
+                        "id_produto": item[2],
+                        "nome_cliente": item[3],
+                        "contato_cliente": item[4],
+                        "nome_produto": item[5],
+                        "categoria_produto": item[6],
+                        "quantidade_venda": item[7],
+                        "preco_produto": item[8],
+                        "valor_venda": item[9],
+                        "data_venda": item[10],
+                        "status_venda": item[11]
+                    }for item in venda_filted]}
         
 
         except (Exception or con.error) as e:
@@ -108,29 +108,29 @@ class Service_venda:
             cursor.execute(sql_filter_venda, venda)
             venda_filted =cursor.fetchall()
             cursor.close()
-            venda_date_filted = []
+            
             
             if not venda_filted:
                 return {"status": False, 'message_error': f'Não existe venda nessa data: {date_venda}'}
             
-            for item in venda_filted:
-                json_venda_date = {
-                    "id_venda": item[0],
-                    "id_cliente": item[1],
-                    "id_produto": item[2],
-                    "nome_cliente": item[3],
-                    "contato_cliente": item[4],
-                    "nome_produto": item[5],
-                    "categoria_produto": item[6],
-                    "quantidade_venda": item[7],
-                    "preco_produto": item[8],
-                    "valor_venda": item[9],
-                    "data_venda": item[10],
-                    "status_venda": item[11]
-                }
-                venda_date_filted.append(json_venda_date)
+            
+                
                     
-                return {'status': True, 'content': venda_date_filted}
+            return {'status': True,
+                    'content': [{
+                        "id_venda": item[0],
+                        "id_cliente": item[1],
+                        "id_produto": item[2],
+                        "nome_cliente": item[3],
+                        "contato_cliente": item[4],
+                        "nome_produto": item[5],
+                        "categoria_produto": item[6],
+                        "quantidade_venda": item[7],
+                        "preco_produto": item[8],
+                        "valor_venda": item[9],
+                        "data_venda": item[10],
+                        "status_venda": item[11]
+                    }for item in venda_filted]}
             
         except (Exception or con.Error) as e:
             return {'status': False, 'message_error': str(e)}
@@ -139,7 +139,6 @@ class Service_venda:
         
         try:
             venda_exists = Service_venda._exists_vendas(id_venda)
-            venda_status_cancel = ('cancelado pelo intermediador', 'prazo de pagamento expirado', 'cancelada pelo cliente','cancelada')
 
             if venda_exists['status'] and not venda_exists['content'] == 'excluida':
                 venda = (id_venda, )

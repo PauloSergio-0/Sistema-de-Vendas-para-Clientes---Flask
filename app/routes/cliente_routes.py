@@ -1,4 +1,4 @@
-from flask import request, jsonify, Flask
+from flask import request, jsonify, Flask, current_app
 from utils.json_validator import Validator
 from service.cliente_service import Service_cliente
 from decorators.jwt_required import jwt_required
@@ -20,8 +20,12 @@ def register_clientes_routes(app: Flask):
             
             Caso o JSON seja valido elo pasa para a fase de inserção de dados no banco pelo metodo 'Service_cliente.insert_cliente()'
         """
+        
         try:
-
+            
+            #adciona log
+            app.logger.info("cadastrou clientes")
+            
             json_cliente = request.get_json()
             if not json_cliente:
                 return jsonify({"error": "JSON não recebido"}), 400
@@ -46,13 +50,18 @@ def register_clientes_routes(app: Flask):
             
             Retorna  ativos, inativos e excluidos.
         """
-        
-        lista_cliente = Service_cliente.list_cliente()
-        if lista_cliente['status']:
-            return jsonify({"cliente": lista_cliente['content']}), 200
-        else:
-            return jsonify({"error": lista_cliente['message_error']}), 400
+        try:
+            #adciona log
+            app.logger.info("Obteve lista de clientes")
             
+            lista_cliente = Service_cliente.list_cliente()
+            if lista_cliente['status']:
+                return jsonify({"cliente": lista_cliente['content']}), 200
+            else:
+                return jsonify({"error": lista_cliente['message_error']}), 400
+            
+        except Exception as e:
+                return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
     
     @app.route("/filtro/cliente", methods = ['GET'])
     def filtro_cliente():
@@ -64,6 +73,9 @@ def register_clientes_routes(app: Flask):
         try:
             
             id_cliente = request.args.get('id_cliente')
+            
+            #adciona log
+            app.logger.info(f"tentativa de filtrar cliente com id {id_cliente}")
             
             if not id_cliente:
                 return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
@@ -85,7 +97,11 @@ def register_clientes_routes(app: Flask):
             Retorna a mensagem de cofirmação de cliente excluido 
         """
         try:
-            (id_cliente) = request.args.get("id_cliente")
+            id_cliente = request.args.get("id_cliente")
+            
+            #log
+            app.logger.info(f"tentativa de deletar cliente com id {id_cliente}")
+
             if  not id_cliente:
                 
                 return jsonify({"message": "Não foi possivel identificar argumentos"}), 400
@@ -112,6 +128,9 @@ def register_clientes_routes(app: Flask):
         try:
 
             id_cliente = request.args.get("id_cliente")
+
+            #log
+            app.logger.info(f"tentativa de desativar cliente com id {id_cliente}")
 
             if not id_cliente:
                 return jsonify({"message": "Não foi possivel identificar argumentos"}), 400

@@ -7,14 +7,14 @@ from model.Produto.produtos_model import Produto
 from model.Venda.vendas_model import Venda
 
 from routes import routes_flask
-
+from .logs_app import logs_api
 
 def create_app():
     """
     Função reposnsavel por inicializar o app Flask junto com o banco de dados
 
     Returns:
-        _type_: _description_
+        _type_: Instância do aplicativo Flask
     """
     app = Flask(__name__)
     
@@ -27,5 +27,8 @@ def create_app():
         Produto.table_produto()
         Venda.table_venda()
         
+    logs_api(app)
+    
     routes_flask(app)
+    
     return app
