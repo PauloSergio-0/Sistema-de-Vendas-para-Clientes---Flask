@@ -4,7 +4,8 @@ from flask import Flask, jsonify
 
 limiter = Limiter(
     key_func= get_remote_address,
-    default_limits= ["100 per day", "50 per hour"]
+    default_limits= ["100 per day", "50 per hour"],
+    storage_uri="redis://localhost:6379"
 )
 def limiter_routes(app: Flask):
     
