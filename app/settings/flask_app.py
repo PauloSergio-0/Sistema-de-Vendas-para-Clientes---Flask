@@ -8,6 +8,7 @@ from model.Venda.vendas_model import Venda
 
 from routes import routes_flask
 from .logs_app import logs_api
+from security.limit_requests import limiter_routes
 
 def create_app():
     """
@@ -28,6 +29,9 @@ def create_app():
         Venda.table_venda()
         
     logs_api(app)
+    
+    limiter_routes(app)
+    
     
     routes_flask(app)
     

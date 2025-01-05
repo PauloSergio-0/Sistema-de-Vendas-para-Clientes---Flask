@@ -3,12 +3,15 @@ from service.produto_service import Service_produto
 from decorators.jwt_required import jwt_required
 from utils.json_validator import Validator
 
+
 def register_produto_routes(app:Flask):
     
     @app.route("/cadastro/produto", methods=["POST"])
     @jwt_required
     def insert_produto():
         try:
+            #adciona log
+            app.logger.info("tentativa de cadastro de produto")
             
             json_produto = request.get_json()  
             
@@ -33,6 +36,9 @@ def register_produto_routes(app:Flask):
     def listar_produto():
         try:
             
+            #adciona log
+            app.logger.info("tentativa de obter lista de produtos")
+            
             produto =  Service_produto.list_produto()
             
             if produto['status']:
@@ -49,7 +55,10 @@ def register_produto_routes(app:Flask):
         try:
 
             id_produto = request.args.get('id_produto')
-
+            
+            #adciona log
+            app.logger.info(f"tentativa de obter produto com id {id_produto}")
+            
             if not id_produto:
                     return jsonify({"error": "JSON não recebido"}),400
 
@@ -67,6 +76,10 @@ def register_produto_routes(app:Flask):
         
         try:
             id_produto = request.args.get("id_produto")
+            
+            #adciona log
+            app.logger.info(f"tentativa de deletar produto com id {id_produto}")
+            
             if not id_produto:
                     return jsonify({"error": "Parametro não recebido"}), 400
                 
@@ -87,6 +100,9 @@ def register_produto_routes(app:Flask):
             
             id_produto = request.args.get("id_produto")
 
+            #adciona log
+            app.logger.info(f"tentativa de obter produto com id {id_produto}")
+            
             if not id_produto:
                 return jsonify({"error": "JSON não recebido"}), 400
             

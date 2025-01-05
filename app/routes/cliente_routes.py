@@ -1,10 +1,13 @@
-from flask import request, jsonify, Flask, current_app
+from flask import request, jsonify, Flask, Blueprint
 from utils.json_validator import Validator
 from service.cliente_service import Service_cliente
 from decorators.jwt_required import jwt_required
+from security.limit_requests import limiter
 
 
 def register_clientes_routes(app: Flask):
+    
+    
     
     @app.route('/cadastro/cliente', methods = ['POST'])
     @jwt_required   
@@ -44,6 +47,7 @@ def register_clientes_routes(app: Flask):
                 return jsonify({"error": f"Não foi possível concluir o serviço devido o erro: {e}"}), 400
 
     @app.route('/listar/cliente', methods = ['GET'])
+    @limiter.limit('5 per minute')
     def listar_cliente():
         """
             Rota para listar todos os clientes do banco de dados.

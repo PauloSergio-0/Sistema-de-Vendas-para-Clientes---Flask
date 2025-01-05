@@ -12,6 +12,9 @@ def register_venda_routes(app: Flask):
 
             json_venda = request.get_json()
             
+            #adciona log
+            app.logger.info(f"tentativa de cadastrar venda")
+            
             if not json_venda:
                 return jsonify({"error": "json não identificado"}), 400
             
@@ -34,6 +37,9 @@ def register_venda_routes(app: Flask):
         
         try:
             
+            #adciona log
+            app.logger.info(f"tentativa de obter lista de venda")
+            
             lista_venda = Service_venda.list_venda()
             if lista_venda['status']:
                 return jsonify({"vendas": lista_venda['content']})
@@ -50,6 +56,9 @@ def register_venda_routes(app: Flask):
     def filtro_venda():
         try:
             id_venda = request.args.get("id_venda")
+            
+            #adciona log
+            app.logger.info(f"tentativa de obter venda com o id {id_venda}")
             
             if not id_venda:
                 return jsonify({"error": "argumentos não identificados"}), 400
@@ -69,6 +78,10 @@ def register_venda_routes(app: Flask):
     def filtro_venda_data():
         try:
             data_venda: str = request.args.get("data_venda")
+            
+            #adciona log
+            app.logger.info(f"tentativa de obter venda com a data da venda {data_venda}")
+            
             if not data_venda:
                 return jsonify({"error": "argumentos não identificados"}), 400
             
@@ -88,6 +101,9 @@ def register_venda_routes(app: Flask):
             
             id_venda = request.args.get("id_venda")
             
+            #adciona log
+            app.logger.info(f"tentativa de deletar venda com o id {id_venda}")
+            
             if not id_venda:
                 return jsonify({"error": "argumentos não identificados"})
             
@@ -106,6 +122,10 @@ def register_venda_routes(app: Flask):
         
         try:
             id_venda: int = request.args.get("id_venda")
+            
+            #adciona log
+            app.logger.info(f"tentativa de cancelar venda com o id {id_venda}")
+            
             if not id_venda:
                 return jsonify({"error": "argumentos não identificados"})
             
@@ -127,6 +147,10 @@ def register_venda_routes(app: Flask):
             se sao aptos para o prosseguimento da venda
         """
         try:
+            
+            #adciona log
+            app.logger.info(f"tentativa de realizar venda")
+            
             json_venda = request.get_json()
             if not json_venda:
                 return jsonify({"error": "argumentos não identificado"}),400
