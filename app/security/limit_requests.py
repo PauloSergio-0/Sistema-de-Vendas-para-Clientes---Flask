@@ -6,10 +6,12 @@ limiter = Limiter(
     key_func= get_remote_address,
     default_limits= ["100 per day", "50 per hour"],
     storage_uri="redis://localhost:6379"
+    # storage_uri="redis://redis:6379" -- for conteiner
 )
+
 def limiter_routes(app: Flask):
     
-    limiter.init_app(app)
+    limiter.init_app(app)  
     
     @app.errorhandler(429)
     def request_limit_error(e):
