@@ -2,15 +2,15 @@
 
 ```
 └── 📁app
-    └── 📁database
+    └── 📁database --inicia o banco de dados
         └── __init__.py
         └── session.py
-    └── 📁decorators
+    └── 📁decorators --funções decoradas
         └── jwt_required.py
-    └── 📁logs
-    └── 📁Loja_Database
+    └── 📁logs --armazenamento de logs
+    └── 📁Loja_Database --database-fisico
         └── loja.db
-    └── 📁model
+    └── 📁model --modelagem do banco de dados
         └── __init__.py
             └── __init__.cpython-313.pyc
         └── 📁Cliente
@@ -24,25 +24,25 @@
         └── 📁Venda
                 └── vendas_model.cpython-313.pyc
             └── vendas_model.py
-    └── 📁routes
+    └── 📁routes --rotas da AOI
         └── __init__.py
         └── authorization_routes.py
         └── cliente_routes.py
         └── produto_routes.py
         └── test_routes.py
         └── venda_routes.py
-    └── 📁service
+    └── 📁service --Funções para as rotas
         └── __init__.py
         └── cliente_service.py
         └── produto_service.py
         └── venda_service.py
-    └── 📁settings
+    └── 📁settings --Configutações da API (logs, app , database)
         └── __init__.py
         └── config.py
         └── flask_app.py
         └── jwt_config.py
         └── logs_app.py
-    └── 📁sql
+    └── 📁sql -- consultas SQLs
         └── 📁cliente_sql
             └── create_table_cliente.sql
             └── delete_cliente.sql
@@ -68,9 +68,9 @@
             └── insert_into_venda.sql
             └── list_venda.sql
             └── status_venda.sql
-    └── 📁utils
+    └── 📁utils --Validadores
         └── __init__.py
         └── auth_service.py
         └── json_validator.py
-    └── run.py
+    └── run.py --execução
 ```
