@@ -42,7 +42,7 @@
         └── flask_app.py
         └── jwt_config.py
         └── logs_app.py
-    └── 📁sql -- consultas SQLs
+    └── 📁sql --consultas SQLs
         └── 📁cliente_sql
             └── create_table_cliente.sql
             └── delete_cliente.sql

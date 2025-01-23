@@ -22,7 +22,6 @@ def create_app():
 
     if Loja_database().exist_db():
 
-
         Cliente.table_clientes()
         Produto.table_produto()
         Venda.table_venda()

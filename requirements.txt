@@ -2,4 +2,3 @@ flask
 pyjwt
 passlib
 flask-limiter
-redis

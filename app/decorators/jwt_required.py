@@ -31,7 +31,7 @@ def jwt_required(f):
         
         request.user = payload
 
-        if not request.user['sub'] == 'FastAPIa':
+        if not request.user['sub'] == 'FastAPI':
             return jsonify({"error": "Token.user inválido"}), 402
 
         return f(*args, **kwargs) # repassa informação para a função original da rota
